@@ -37,30 +37,6 @@ export default function AdminDashboard({
   return (
     <main className="min-h-screen bg-white text-gray-800">
 
-      {/* Header */}
-      <header className="flex items-center justify-between border-b border-gray-300 px-6 py-3">
-
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center border border-gray-300 text-xs text-gray-500">
-            LOGO
-          </div>
-
-          <div>
-            <h2 className="text-lg font-bold">
-              Custom Made Designer Dress
-            </h2>
-            <p className="text-xs text-gray-500">
-              Designer Studio Management System
-            </p>
-          </div>
-        </div>
-
-        <p className="text-sm text-gray-600">
-          Admin Portal / Studio administrator
-        </p>
-
-      </header>
-
       <div className="flex min-h-[calc(100vh-65px)]">
 
         {/* Sidebar */}
@@ -86,19 +62,16 @@ export default function AdminDashboard({
 
                 {item.name === "Dashboard" && (
                   <span className="block text-xs text-gray-500">
-                    → Screen 3
                   </span>
                 )}
 
                 {item.name === "Add Customer/Order" && (
                   <span className="block text-xs text-gray-500">
-                    → Screen 4
                   </span>
                 )}
 
                 {item.name === "Style Gallery" && (
                   <span className="block text-xs text-gray-500">
-                    → Screen 5
                   </span>
                 )}
               </button>
@@ -110,7 +83,6 @@ export default function AdminDashboard({
             >
               Logout
               <span className="block text-xs text-gray-500">
-                → Screen 1
               </span>
             </button>
 
@@ -283,22 +255,6 @@ export default function AdminDashboard({
             </table>
 
           </div>
-
-          <p className="mt-3 text-xs text-gray-500">
-            Open → Admin order details · subsequent flow.
-          </p>
-
-          {/* Order Handoff */}
-          <div className="mt-5 border border-gray-300 bg-gray-50 p-4 text-xs leading-5 text-gray-600">
-            Order handoff: each new order receives a unique Order ID.
-            After creating an order on Screen 4, the admin shares that ID
-            with the customer for lookup on Screen 2B.
-          </div>
-
-          <p className="mt-4 text-xs text-gray-500">
-            Style references: choose Style Gallery in the sidebar → Screen 5.
-          </p>
-
           {/* Summary of other dashboard records */}
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
 
@@ -309,9 +265,6 @@ export default function AdminDashboard({
               <p className="mt-2 text-2xl font-bold">
                 {alterations.length}
               </p>
-              <p className="text-xs text-gray-500">
-                Submitted requests
-              </p>
             </div>
 
             <div className="border border-gray-300 p-4">
@@ -320,9 +273,6 @@ export default function AdminDashboard({
               </p>
               <p className="mt-2 text-2xl font-bold">
                 {feedback.length}
-              </p>
-              <p className="text-xs text-gray-500">
-                Feedback entries received
               </p>
             </div>
 
