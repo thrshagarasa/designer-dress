@@ -168,10 +168,6 @@ export default function AdminDashboard({
               <h3 className="mt-2 text-3xl font-bold">
                 {String(pending).padStart(2, "0")}
               </h3>
-
-              <p className="mt-2 text-xs text-gray-500">
-                Click to view
-              </p>
             </div>
 
             <div
@@ -189,10 +185,6 @@ export default function AdminDashboard({
               <h3 className="mt-2 text-3xl font-bold">
                 {String(inProgress).padStart(2, "0")}
               </h3>
-
-              <p className="mt-2 text-xs text-gray-500">
-                Click to view
-              </p>
             </div>
 
             <div
@@ -210,10 +202,6 @@ export default function AdminDashboard({
               <h3 className="mt-2 text-3xl font-bold">
                 {String(completed).padStart(2, "0")}
               </h3>
-
-              <p className="mt-2 text-xs text-gray-500">
-                Click to view
-              </p>
             </div>
 
           </div>
