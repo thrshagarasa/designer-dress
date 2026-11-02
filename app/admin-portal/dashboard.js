@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -73,14 +72,16 @@ export default function AdminDashboard({
   orders = [],
   alterations = defaultAlterations,
   feedback = defaultFeedback,
+  initialFilter = null,
   onUpdateAlterationStatus,
   onAddOrder,
-  onUpdateStatus,
-  onStyleGallery,
+  onAllOrders,
   onLogout,
 }) {
-  const [activeFilter, setActiveFilter] = useState(null);
+  const [activeFilter, setActiveFilter] = useState(initialFilter);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedAlteration, setSelectedAlteration] = useState(null);
+  const [selectedFeedback, setSelectedFeedback] = useState(null);
 
   const pending = orders.filter(
     (order) => order.status === "Pending"
@@ -152,16 +153,40 @@ export default function AdminDashboard({
   const handleCardClick = (status) => {
     setActiveFilter((prev) => (prev === status ? null : status));
     setSearchQuery("");
+    setSelectedAlteration(null);
+    setSelectedFeedback(null);
   };
 
   const menuItems = [
-    { name: "Dashboard", action: null },
+    {
+      name: "Dashboard",
+      action: () => {
+        setActiveFilter(null);
+        setSearchQuery("");
+        setSelectedAlteration(null);
+        setSelectedFeedback(null);
+      },
+    },
     { name: "Add Customer/Order", action: onAddOrder },
-    { name: "All Orders", action: onUpdateStatus },
-    { name: "Update Status", action: onUpdateStatus },
-    { name: "Style Gallery", action: onStyleGallery },
-    { name: "Alteration Requests", action: () => handleCardClick("alterations") },
-    { name: "Customer Feedback", action: () => handleCardClick("feedback") },
+    { name: "All Orders", action: onAllOrders },
+    {
+      name: "Alteration Requests",
+      action: () => {
+        setActiveFilter("alterations");
+        setSearchQuery("");
+        setSelectedAlteration(null);
+        setSelectedFeedback(null);
+      },
+    },
+    {
+      name: "Customer Feedback",
+      action: () => {
+        setActiveFilter("feedback");
+        setSearchQuery("");
+        setSelectedAlteration(null);
+        setSelectedFeedback(null);
+      },
+    },
   ];
 
   const formatDate = (dateStr) => {
@@ -191,264 +216,80 @@ export default function AdminDashboard({
 
           <nav className="space-y-2">
 
-            {menuItems.map((item) => (
-              <button
-                key={item.name}
-                onClick={item.action || undefined}
-                className={`block w-full px-3 py-3 text-left text-sm ${
-                  item.name === "Dashboard"
-                    ? "border-l-4 border-black bg-white font-bold"
-                    : "hover:bg-white"
-                }`}
-              >
-                {item.name}
+            {menuItems.map((item) => {
+              const isActive =
+                (item.name === "Dashboard" && !activeFilter) ||
+                (item.name === "Alteration Requests" && activeFilter === "alterations") ||
+                (item.name === "Customer Feedback" && activeFilter === "feedback");
 
-                {item.name === "Dashboard" && (
-                  <span className="block text-xs text-gray-500">
-                  </span>
-                )}
-
-                {item.name === "Add Customer/Order" && (
-                  <span className="block text-xs text-gray-500">
-                  </span>
-                )}
-
-                {item.name === "Style Gallery" && (
-                  <span className="block text-xs text-gray-500">
-                  </span>
-                )}
-              </button>
-            ))}
+              return (
+                <button
+                  key={item.name}
+                  onClick={item.action || undefined}
+                  className={`block w-full px-3 py-3 text-left text-sm ${
+                    isActive
+                      ? "border-l-4 border-black bg-white font-bold"
+                      : "hover:bg-white"
+                  }`}
+                >
+                  {item.name}
+                </button>
+              );
+            })}
 
             <button
               onClick={onLogout}
               className="block w-full px-3 py-3 text-left text-sm hover:bg-white"
             >
               Logout
-              <span className="block text-xs text-gray-500">
-              </span>
             </button>
 
           </nav>
 
         </aside>
 
-        {/* Main Dashboard */}
+        {/* Main Content Area */}
         <section className="min-w-0 flex-1 p-6">
 
-          {/* Heading */}
-          <div className="mb-7 flex flex-wrap items-center justify-between gap-4">
-
-            <div>
-              <h1 className="text-2xl font-bold">
-                Admin Dashboard
-              </h1>
-            </div>
-
-          </div>
-
-          {/* Search Bar */}
-          <div className="mb-6">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={
-                activeFilter === "alterations"
-                  ? "Search alteration requests..."
-                  : activeFilter === "feedback"
-                  ? "Search customer feedback..."
-                  : "Search by order ID, customer name, dress type, date..."
-              }
-              className="w-full border border-gray-300 px-4 py-3 text-sm outline-none focus:border-black"
-            />
-          </div>
-
-          {/* Order Overview */}
-          <h2 className="mb-3 text-base font-bold">
-            Order overview
-          </h2>
-
-          <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-
-            <div
-              onClick={() => handleCardClick("Pending")}
-              className={`cursor-pointer border p-5 transition-all hover:shadow-md ${
-                activeFilter === "Pending"
-                  ? "border-yellow-500 bg-yellow-50 ring-2 ring-yellow-300"
-                  : "border-gray-300 hover:border-gray-400"
-              }`}
-            >
-              <p className="text-sm font-semibold">
-                Pending
-              </p>
-
-              <h3 className="mt-2 text-3xl font-bold">
-                {String(pending).padStart(2, "0")}
-              </h3>
-
-              <p className="mt-2 text-xs text-gray-500">
-                Click to view
-              </p>
-            </div>
-
-            <div
-              onClick={() => handleCardClick("In Progress")}
-              className={`cursor-pointer border p-5 transition-all hover:shadow-md ${
-                activeFilter === "In Progress"
-                  ? "border-blue-500 bg-blue-50 ring-2 ring-blue-300"
-                  : "border-gray-300 hover:border-gray-400"
-              }`}
-            >
-              <p className="text-sm font-semibold">
-                In Progress
-              </p>
-
-              <h3 className="mt-2 text-3xl font-bold">
-                {String(inProgress).padStart(2, "0")}
-              </h3>
-
-              <p className="mt-2 text-xs text-gray-500">
-                Click to view
-              </p>
-            </div>
-
-            <div
-              onClick={() => handleCardClick("Completed")}
-              className={`cursor-pointer border p-5 transition-all hover:shadow-md ${
-                activeFilter === "Completed"
-                  ? "border-green-500 bg-green-50 ring-2 ring-green-300"
-                  : "border-gray-300 hover:border-gray-400"
-              }`}
-            >
-              <p className="text-sm font-semibold">
-                Completed
-              </p>
-
-              <h3 className="mt-2 text-3xl font-bold">
-                {String(completed).padStart(2, "0")}
-              </h3>
-
-              <p className="mt-2 text-xs text-gray-500">
-                Click to view
-              </p>
-            </div>
-
-          </div>
-
-          {/* Filtered Orders List — shown when a status card is active */}
-          {activeFilter && activeFilter !== "alterations" && activeFilter !== "feedback" && (
-            <div className="mb-8">
-              <div className="mb-3 flex items-center justify-between">
-                <h2 className="text-base font-bold">
-                  {activeFilter} Orders ({filteredOrders.length})
-                </h2>
-
-                <button
-                  onClick={() => setActiveFilter(null)}
-                  className="text-xs text-gray-500 underline hover:text-gray-800"
-                >
-                  Close
-                </button>
-              </div>
-
-              <div className="overflow-x-auto border border-gray-300">
-
-                <table className="w-full min-w-[750px] text-left text-sm">
-
-                  <thead className="bg-gray-100">
-                    <tr>
-                      <th className="border-b px-4 py-3">Order ID</th>
-                      <th className="border-b px-4 py-3">Customer name</th>
-                      <th className="border-b px-4 py-3">Dress type</th>
-                      <th className="border-b px-4 py-3">Delivery date</th>
-                      <th className="border-b px-4 py-3">Status</th>
-                      <th className="border-b px-4 py-3">Action</th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    {filteredOrders.map((order) => (
-                      <tr key={order.id} className="hover:bg-gray-50">
-
-                        <td className="border-b px-4 py-4">
-                          {order.id}
-                        </td>
-
-                        <td className="border-b px-4 py-4">
-                          {order.customer}
-                        </td>
-
-                        <td className="border-b px-4 py-4">
-                          {order.dress}
-                        </td>
-
-                        <td className="border-b px-4 py-4">
-                          {order.delivery}
-                        </td>
-
-                        <td className="border-b px-4 py-4">
-                          <span
-                            className={`rounded px-2 py-1 text-xs font-semibold ${
-                              order.status === "Pending"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : order.status === "In Progress"
-                                ? "bg-blue-100 text-blue-800"
-                                : "bg-green-100 text-green-800"
-                            }`}
-                          >
-                            {order.status}
-                          </span>
-                        </td>
-
-                        <td className="border-b px-4 py-4">
-                          <button
-                            onClick={onUpdateStatus}
-                            className="underline hover:text-blue-700"
-                          >
-                            Open
-                          </button>
-                        </td>
-
-                      </tr>
-                    ))}
-
-                    {filteredOrders.length === 0 && (
-                      <tr>
-                        <td colSpan="6" className="px-4 py-8 text-center text-gray-500">
-                          No {activeFilter.toLowerCase()} orders found.
-                        </td>
-                      </tr>
-                    )}
-
-                  </tbody>
-
-                </table>
-
-              </div>
-            </div>
-          )}
-
-          {/* Alteration Requests List — shown when alterations card is active */}
+          {/* VIEW 1: ONLY ALTERATION REQUESTS & SEARCH BAR */}
           {activeFilter === "alterations" && (
-            <div className="mb-8">
-              <div className="mb-3 flex items-center justify-between">
-                <h2 className="text-base font-bold">
-                  Alteration Requests ({filteredAlterations.length})
-                </h2>
+            <div>
+              <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+                <div>
+                  <h1 className="text-2xl font-bold">
+                    Alteration Requests
+                  </h1>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Showing all customer alteration requests ({filteredAlterations.length}). Click any row to view full description.
+                  </p>
+                </div>
 
                 <button
-                  onClick={() => setActiveFilter(null)}
-                  className="text-xs text-gray-500 underline hover:text-gray-800"
+                  onClick={() => {
+                    setActiveFilter(null);
+                    setSearchQuery("");
+                    setSelectedAlteration(null);
+                  }}
+                  className="rounded border border-gray-300 px-3 py-1.5 text-xs font-semibold hover:bg-gray-100"
                 >
-                  Close
+                  ← Back to Dashboard
                 </button>
               </div>
 
+              {/* Search Bar */}
+              <div className="mb-6">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search alteration requests by Order ID, customer, dress, issue, status..."
+                  className="w-full border border-gray-300 px-4 py-3 text-sm outline-none focus:border-black"
+                />
+              </div>
+
+              {/* Alteration Requests Table */}
               <div className="overflow-x-auto border border-gray-300">
-
                 <table className="w-full min-w-[750px] text-left text-sm">
-
                   <thead className="bg-gray-100">
                     <tr>
                       <th className="border-b px-4 py-3">Order ID</th>
@@ -465,9 +306,12 @@ export default function AdminDashboard({
 
                   <tbody>
                     {filteredAlterations.map((alt) => (
-                      <tr key={alt.id} className="hover:bg-gray-50">
-
-                        <td className="border-b px-4 py-4">
+                      <tr
+                        key={alt.id}
+                        onClick={() => setSelectedAlteration(alt)}
+                        className="cursor-pointer hover:bg-gray-50 transition-colors"
+                      >
+                        <td className="border-b px-4 py-4 font-semibold">
                           {alt.orderId}
                         </td>
 
@@ -485,8 +329,13 @@ export default function AdminDashboard({
                           </span>
                         </td>
 
-                        <td className="border-b px-4 py-4 max-w-[200px] truncate" title={alt.description}>
-                          {alt.description}
+                        <td className="border-b px-4 py-4 max-w-[220px]" title="Click to view full description">
+                          <div className="truncate text-gray-700 font-medium">
+                            {alt.description}
+                          </div>
+                          <span className="text-[11px] text-blue-600 underline">
+                            View description
+                          </span>
                         </td>
 
                         <td className="border-b px-4 py-4">
@@ -511,18 +360,31 @@ export default function AdminDashboard({
                           {formatDate(alt.createdAt)}
                         </td>
 
-                        <td className="border-b px-4 py-4">
-                          <select
-                            value={alt.status}
-                            onChange={(e) => onUpdateAlterationStatus?.(alt.id, e.target.value)}
-                            className="rounded border border-gray-300 bg-white px-2 py-1 text-xs font-semibold outline-none focus:border-black cursor-pointer"
-                          >
-                            <option value="Submitted">Submitted</option>
-                            <option value="Reviewed">Reviewed</option>
-                            <option value="Resolved">Resolved</option>
-                          </select>
+                        <td
+                          className="border-b px-4 py-4"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => setSelectedAlteration(alt)}
+                              className="rounded border border-gray-300 px-2.5 py-1 text-xs font-semibold hover:bg-gray-100 whitespace-nowrap"
+                            >
+                              View
+                            </button>
+                            <select
+                              value={alt.status}
+                              onChange={(e) =>
+                                onUpdateAlterationStatus?.(alt.id, e.target.value)
+                              }
+                              className="cursor-pointer rounded border border-gray-300 bg-white px-2 py-1 text-xs font-semibold outline-none focus:border-black"
+                            >
+                              <option value="Submitted">Submitted</option>
+                              <option value="Reviewed">Reviewed</option>
+                              <option value="Resolved">Resolved</option>
+                            </select>
+                          </div>
                         </td>
-
                       </tr>
                     ))}
 
@@ -533,50 +395,70 @@ export default function AdminDashboard({
                         </td>
                       </tr>
                     )}
-
                   </tbody>
-
                 </table>
-
               </div>
             </div>
           )}
 
-          {/* Customer Feedback List — shown when feedback card is active */}
+          {/* VIEW 2: ONLY CUSTOMER FEEDBACK & SEARCH BAR */}
           {activeFilter === "feedback" && (
-            <div className="mb-8">
-              <div className="mb-3 flex items-center justify-between">
-                <h2 className="text-base font-bold">
-                  Customer Feedback ({filteredFeedback.length})
-                </h2>
+            <div>
+              <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+                <div>
+                  <h1 className="text-2xl font-bold">
+                    Customer Feedback
+                  </h1>
+                  <p className="mt-1 text-sm text-gray-500">
+                    Showing all customer ratings and feedback reviews ({filteredFeedback.length}). Click any row to view full feedback.
+                  </p>
+                </div>
 
                 <button
-                  onClick={() => setActiveFilter(null)}
-                  className="text-xs text-gray-500 underline hover:text-gray-800"
+                  onClick={() => {
+                    setActiveFilter(null);
+                    setSearchQuery("");
+                    setSelectedFeedback(null);
+                  }}
+                  className="rounded border border-gray-300 px-3 py-1.5 text-xs font-semibold hover:bg-gray-100"
                 >
-                  Close
+                  ← Back to Dashboard
                 </button>
               </div>
 
+              {/* Search Bar */}
+              <div className="mb-6">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search customer feedback by Order ID, customer, rating, comments..."
+                  className="w-full border border-gray-300 px-4 py-3 text-sm outline-none focus:border-black"
+                />
+              </div>
+
+              {/* Customer Feedback Table */}
               <div className="overflow-x-auto border border-gray-300">
-
                 <table className="w-full min-w-[750px] text-left text-sm">
-
                   <thead className="bg-gray-100">
                     <tr>
                       <th className="border-b px-4 py-3">Order ID</th>
                       <th className="border-b px-4 py-3">Customer</th>
                       <th className="border-b px-4 py-3">Rating</th>
-                      <th className="border-b px-4 py-3">Comments</th>
+                      <th className="border-b px-4 py-3">Comments / Review</th>
                       <th className="border-b px-4 py-3">Submitted</th>
+                      <th className="border-b px-4 py-3">Action</th>
                     </tr>
                   </thead>
 
                   <tbody>
                     {filteredFeedback.map((fb) => (
-                      <tr key={fb.id} className="hover:bg-gray-50">
-
-                        <td className="border-b px-4 py-4">
+                      <tr
+                        key={fb.id}
+                        onClick={() => setSelectedFeedback(fb)}
+                        className="cursor-pointer hover:bg-gray-50 transition-colors"
+                      >
+                        <td className="border-b px-4 py-4 font-semibold">
                           {fb.orderId}
                         </td>
 
@@ -596,165 +478,499 @@ export default function AdminDashboard({
                           </span>
                         </td>
 
-                        <td className="border-b px-4 py-4 max-w-[300px] truncate" title={fb.comments}>
-                          {fb.comments}
+                        <td className="border-b px-4 py-4 max-w-[300px]" title="Click to read full feedback">
+                          <div className="truncate text-gray-700 font-medium">
+                            {fb.comments}
+                          </div>
+                          <span className="text-[11px] text-blue-600 underline">
+                            Read full feedback
+                          </span>
                         </td>
 
                         <td className="border-b px-4 py-4 text-xs text-gray-500">
                           {formatDate(fb.createdAt)}
                         </td>
 
+                        <td
+                          className="border-b px-4 py-4"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <button
+                            type="button"
+                            onClick={() => setSelectedFeedback(fb)}
+                            className="rounded border border-gray-300 px-3 py-1 text-xs font-semibold hover:bg-gray-100 whitespace-nowrap"
+                          >
+                            View Details
+                          </button>
+                        </td>
                       </tr>
                     ))}
 
                     {filteredFeedback.length === 0 && (
                       <tr>
-                        <td colSpan="5" className="px-4 py-8 text-center text-gray-500">
+                        <td colSpan="6" className="px-4 py-8 text-center text-gray-500">
                           No customer feedback found.
                         </td>
                       </tr>
                     )}
-
                   </tbody>
-
                 </table>
-
               </div>
             </div>
           )}
 
-          {/* Recent Orders — hidden when any filter is active */}
-          {!activeFilter && (
-            <>
-              <div className="mb-3 flex items-center justify-between">
-                <h2 className="text-base font-bold">
-                  Recent orders
-                </h2>
-
-                <span className="text-xs text-gray-500">
-                  {recentOrders.length} recent orders
-                </span>
+          {/* VIEW 3: STANDARD DASHBOARD OVERVIEW (shown only when NOT on alterations or feedback) */}
+          {activeFilter !== "alterations" && activeFilter !== "feedback" && (
+            <div>
+              {/* Heading */}
+              <div className="mb-7 flex flex-wrap items-center justify-between gap-4">
+                <div>
+                  <h1 className="text-2xl font-bold">
+                    Admin Dashboard
+                  </h1>
+                </div>
               </div>
 
-              <div className="overflow-x-auto border border-gray-300">
-
-                <table className="w-full min-w-[750px] text-left text-sm">
-
-                  <thead className="bg-gray-100">
-                    <tr>
-                      <th className="border-b px-4 py-3">Order ID</th>
-                      <th className="border-b px-4 py-3">Customer name</th>
-                      <th className="border-b px-4 py-3">Dress type</th>
-                      <th className="border-b px-4 py-3">Delivery date</th>
-                      <th className="border-b px-4 py-3">Status</th>
-                      <th className="border-b px-4 py-3">Action</th>
-                    </tr>
-                  </thead>
-
-                  <tbody>
-                    {recentOrders.map((order) => (
-                      <tr key={order.id} className="hover:bg-gray-50">
-
-                        <td className="border-b px-4 py-4">
-                          {order.id}
-                        </td>
-
-                        <td className="border-b px-4 py-4">
-                          {order.customer}
-                        </td>
-
-                        <td className="border-b px-4 py-4">
-                          {order.dress}
-                        </td>
-
-                        <td className="border-b px-4 py-4">
-                          {order.delivery}
-                        </td>
-
-                        <td className="border-b px-4 py-4">
-                          <span
-                            className={`rounded px-2 py-1 text-xs font-semibold ${
-                              order.status === "Pending"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : order.status === "In Progress"
-                                ? "bg-blue-100 text-blue-800"
-                                : "bg-green-100 text-green-800"
-                            }`}
-                          >
-                            {order.status}
-                          </span>
-                        </td>
-
-                        <td className="border-b px-4 py-4">
-                          <button
-                            onClick={onUpdateStatus}
-                            className="underline hover:text-blue-700"
-                          >
-                            Open
-                          </button>
-                        </td>
-
-                      </tr>
-                    ))}
-
-                    {recentOrders.length === 0 && (
-                      <tr>
-                        <td colSpan="6" className="px-4 py-8 text-center text-gray-500">
-                          No orders available.
-                        </td>
-                      </tr>
-                    )}
-
-                  </tbody>
-
-                </table>
-
+              {/* Search Bar */}
+              <div className="mb-6">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search by order ID, customer name, dress type, date..."
+                  className="w-full border border-gray-300 px-4 py-3 text-sm outline-none focus:border-black"
+                />
               </div>
-            </>
+
+              {/* Order Overview */}
+              <h2 className="mb-3 text-base font-bold">
+                Order overview
+              </h2>
+
+              <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+                <div
+                  onClick={() => handleCardClick("Pending")}
+                  className={`cursor-pointer border p-5 transition-all hover:shadow-md ${
+                    activeFilter === "Pending"
+                      ? "border-yellow-500 bg-yellow-50 ring-2 ring-yellow-300"
+                      : "border-gray-300 hover:border-gray-400"
+                  }`}
+                >
+                  <p className="text-sm font-semibold">
+                    Pending
+                  </p>
+                  <h3 className="mt-2 text-3xl font-bold">
+                    {String(pending).padStart(2, "0")}
+                  </h3>
+                  <p className="mt-2 text-xs text-gray-500">
+                    Click to view
+                  </p>
+                </div>
+
+                <div
+                  onClick={() => handleCardClick("In Progress")}
+                  className={`cursor-pointer border p-5 transition-all hover:shadow-md ${
+                    activeFilter === "In Progress"
+                      ? "border-blue-500 bg-blue-50 ring-2 ring-blue-300"
+                      : "border-gray-300 hover:border-gray-400"
+                  }`}
+                >
+                  <p className="text-sm font-semibold">
+                    In Progress
+                  </p>
+                  <h3 className="mt-2 text-3xl font-bold">
+                    {String(inProgress).padStart(2, "0")}
+                  </h3>
+                  <p className="mt-2 text-xs text-gray-500">
+                    Click to view
+                  </p>
+                </div>
+
+                <div
+                  onClick={() => handleCardClick("Completed")}
+                  className={`cursor-pointer border p-5 transition-all hover:shadow-md ${
+                    activeFilter === "Completed"
+                      ? "border-green-500 bg-green-50 ring-2 ring-green-300"
+                      : "border-gray-300 hover:border-gray-400"
+                  }`}
+                >
+                  <p className="text-sm font-semibold">
+                    Completed
+                  </p>
+                  <h3 className="mt-2 text-3xl font-bold">
+                    {String(completed).padStart(2, "0")}
+                  </h3>
+                  <p className="mt-2 text-xs text-gray-500">
+                    Click to view
+                  </p>
+                </div>
+              </div>
+
+              {/* Filtered Orders List — shown when a status card is clicked (Pending, In Progress, Completed) */}
+              {activeFilter && (
+                <div className="mb-8">
+                  <div className="mb-3 flex items-center justify-between">
+                    <h2 className="text-base font-bold">
+                      {activeFilter} Orders ({filteredOrders.length})
+                    </h2>
+                    <button
+                      onClick={() => setActiveFilter(null)}
+                      className="text-xs text-gray-500 underline hover:text-gray-800"
+                    >
+                      Close
+                    </button>
+                  </div>
+
+                  <div className="overflow-x-auto border border-gray-300">
+                    <table className="w-full min-w-[750px] text-left text-sm">
+                      <thead className="bg-gray-100">
+                        <tr>
+                          <th className="border-b px-4 py-3">Order ID</th>
+                          <th className="border-b px-4 py-3">Customer name</th>
+                          <th className="border-b px-4 py-3">Dress type</th>
+                          <th className="border-b px-4 py-3">Delivery date</th>
+                          <th className="border-b px-4 py-3">Status</th>
+                          <th className="border-b px-4 py-3">Action</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        {filteredOrders.map((order) => (
+                          <tr key={order.id} className="hover:bg-gray-50">
+                            <td className="border-b px-4 py-4">{order.id}</td>
+                            <td className="border-b px-4 py-4">{order.customer}</td>
+                            <td className="border-b px-4 py-4">{order.dress}</td>
+                            <td className="border-b px-4 py-4">{order.delivery}</td>
+                            <td className="border-b px-4 py-4">
+                              <span
+                                className={`rounded px-2 py-1 text-xs font-semibold ${
+                                  order.status === "Pending"
+                                    ? "bg-yellow-100 text-yellow-800"
+                                    : order.status === "In Progress"
+                                    ? "bg-blue-100 text-blue-800"
+                                    : "bg-green-100 text-green-800"
+                                }`}
+                              >
+                                {order.status}
+                              </span>
+                            </td>
+                            <td className="border-b px-4 py-4">
+                              <button
+                                onClick={onAllOrders}
+                                className="underline hover:text-blue-700"
+                              >
+                                Open
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+
+                        {filteredOrders.length === 0 && (
+                          <tr>
+                            <td colSpan="6" className="px-4 py-8 text-center text-gray-500">
+                              No {activeFilter.toLowerCase()} orders found.
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {/* Recent Orders — hidden when a status filter is active */}
+              {!activeFilter && (
+                <>
+                  <div className="mb-3 flex items-center justify-between">
+                    <h2 className="text-base font-bold">
+                      Recent orders
+                    </h2>
+                    <span className="text-xs text-gray-500">
+                      {recentOrders.length} recent orders
+                    </span>
+                  </div>
+
+                  <div className="overflow-x-auto border border-gray-300">
+                    <table className="w-full min-w-[750px] text-left text-sm">
+                      <thead className="bg-gray-100">
+                        <tr>
+                          <th className="border-b px-4 py-3">Order ID</th>
+                          <th className="border-b px-4 py-3">Customer name</th>
+                          <th className="border-b px-4 py-3">Dress type</th>
+                          <th className="border-b px-4 py-3">Delivery date</th>
+                          <th className="border-b px-4 py-3">Status</th>
+                          <th className="border-b px-4 py-3">Action</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        {recentOrders.map((order) => (
+                          <tr key={order.id} className="hover:bg-gray-50">
+                            <td className="border-b px-4 py-4">{order.id}</td>
+                            <td className="border-b px-4 py-4">{order.customer}</td>
+                            <td className="border-b px-4 py-4">{order.dress}</td>
+                            <td className="border-b px-4 py-4">{order.delivery}</td>
+                            <td className="border-b px-4 py-4">
+                              <span
+                                className={`rounded px-2 py-1 text-xs font-semibold ${
+                                  order.status === "Pending"
+                                    ? "bg-yellow-100 text-yellow-800"
+                                    : order.status === "In Progress"
+                                    ? "bg-blue-100 text-blue-800"
+                                    : "bg-green-100 text-green-800"
+                                }`}
+                              >
+                                {order.status}
+                              </span>
+                            </td>
+                            <td className="border-b px-4 py-4">
+                              <button
+                                onClick={onAllOrders}
+                                className="underline hover:text-blue-700"
+                              >
+                                Open
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+
+                        {recentOrders.length === 0 && (
+                          <tr>
+                            <td colSpan="6" className="px-4 py-8 text-center text-gray-500">
+                              No orders available.
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              )}
+
+              {/* Summary cards — Alteration Requests & Customer Feedback */}
+              <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                <div
+                  onClick={() => handleCardClick("alterations")}
+                  className="cursor-pointer border border-gray-300 p-4 transition-all hover:border-gray-400 hover:shadow-md"
+                >
+                  <p className="text-sm font-semibold">
+                    Alteration Requests
+                  </p>
+                  <p className="mt-2 text-2xl font-bold">
+                    {String(alterations.length).padStart(2, "0")}
+                  </p>
+                  <p className="mt-2 text-xs text-gray-500">
+                    Click to view
+                  </p>
+                </div>
+
+                <div
+                  onClick={() => handleCardClick("feedback")}
+                  className="cursor-pointer border border-gray-300 p-4 transition-all hover:border-gray-400 hover:shadow-md"
+                >
+                  <p className="text-sm font-semibold">
+                    Customer Feedback
+                  </p>
+                  <p className="mt-2 text-2xl font-bold">
+                    {String(feedback.length).padStart(2, "0")}
+                  </p>
+                  <p className="mt-2 text-xs text-gray-500">
+                    Click to view
+                  </p>
+                </div>
+              </div>
+            </div>
           )}
 
-          {/* Summary cards — Alteration Requests & Customer Feedback */}
-          <div className="mt-5 grid gap-4 sm:grid-cols-2">
+          {/* MODAL 1: FULL ALTERATION REQUEST DETAILS & DESCRIPTION */}
+          {selectedAlteration && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+              <div className="w-full max-w-lg border border-gray-300 bg-white p-6 shadow-2xl">
+                <div className="mb-4 flex items-center justify-between border-b pb-3">
+                  <h3 className="text-lg font-bold">
+                    Alteration Request Details
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedAlteration(null)}
+                    className="text-2xl font-bold leading-none text-gray-400 hover:text-black"
+                    aria-label="Close"
+                  >
+                    ×
+                  </button>
+                </div>
 
-            <div
-              onClick={() => handleCardClick("alterations")}
-              className={`cursor-pointer border p-4 transition-all hover:shadow-md ${
-                activeFilter === "alterations"
-                  ? "border-orange-500 bg-orange-50 ring-2 ring-orange-300"
-                  : "border-gray-300 hover:border-gray-400"
-              }`}
-            >
-              <p className="text-sm font-semibold">
-                Alteration Requests
-              </p>
-              <p className="mt-2 text-2xl font-bold">
-                {String(alterations.length).padStart(2, "0")}
-              </p>
-              <p className="mt-2 text-xs text-gray-500">
-                Click to view
-              </p>
+                <div className="space-y-4 text-sm">
+                  <div className="grid grid-cols-2 gap-3 border border-gray-200 bg-gray-50 p-3.5">
+                    <div>
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500">
+                        Order ID
+                      </span>
+                      <p className="font-semibold text-gray-900">{selectedAlteration.orderId}</p>
+                    </div>
+
+                    <div>
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500">
+                        Customer
+                      </span>
+                      <p className="font-semibold text-gray-900">{selectedAlteration.customer}</p>
+                    </div>
+
+                    <div>
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500">
+                        Dress Type
+                      </span>
+                      <p className="text-gray-800">{selectedAlteration.dress || "—"}</p>
+                    </div>
+
+                    <div>
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500">
+                        Issue Type
+                      </span>
+                      <p className="font-semibold text-orange-700">{selectedAlteration.issueType}</p>
+                    </div>
+
+                    <div>
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500">
+                        Preferred Date
+                      </span>
+                      <p className="text-gray-800">{selectedAlteration.preferredDate || "—"}</p>
+                    </div>
+
+                    <div>
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500">
+                        Submitted Date
+                      </span>
+                      <p className="text-gray-800">{formatDate(selectedAlteration.createdAt)}</p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-gray-600">
+                      Customer Description / What they have requested:
+                    </span>
+                    <div className="rounded border border-gray-300 bg-gray-50 p-4 text-sm leading-relaxed text-gray-800 whitespace-pre-wrap font-medium">
+                      {selectedAlteration.description}
+                    </div>
+                  </div>
+
+                  <div>
+                    <span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-gray-600">
+                      Update Request Status:
+                    </span>
+                    <select
+                      value={selectedAlteration.status}
+                      onChange={(e) => {
+                        const newStatus = e.target.value;
+                        onUpdateAlterationStatus?.(selectedAlteration.id, newStatus);
+                        setSelectedAlteration((prev) => ({
+                          ...prev,
+                          status: newStatus,
+                        }));
+                      }}
+                      className="w-full cursor-pointer rounded border border-gray-300 bg-white px-3 py-2 text-sm font-semibold outline-none focus:border-black"
+                    >
+                      <option value="Submitted">Submitted</option>
+                      <option value="Reviewed">Reviewed</option>
+                      <option value="Resolved">Resolved</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="mt-6 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedAlteration(null)}
+                    className="bg-black px-6 py-2.5 text-xs font-semibold text-white hover:bg-gray-800"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
             </div>
+          )}
 
-            <div
-              onClick={() => handleCardClick("feedback")}
-              className={`cursor-pointer border p-4 transition-all hover:shadow-md ${
-                activeFilter === "feedback"
-                  ? "border-purple-500 bg-purple-50 ring-2 ring-purple-300"
-                  : "border-gray-300 hover:border-gray-400"
-              }`}
-            >
-              <p className="text-sm font-semibold">
-                Customer Feedback
-              </p>
-              <p className="mt-2 text-2xl font-bold">
-                {String(feedback.length).padStart(2, "0")}
-              </p>
-              <p className="mt-2 text-xs text-gray-500">
-                Click to view
-              </p>
+          {/* MODAL 2: FULL CUSTOMER FEEDBACK & DESCRIPTION */}
+          {selectedFeedback && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+              <div className="w-full max-w-lg border border-gray-300 bg-white p-6 shadow-2xl">
+                <div className="mb-4 flex items-center justify-between border-b pb-3">
+                  <h3 className="text-lg font-bold">
+                    Customer Feedback Review
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedFeedback(null)}
+                    className="text-2xl font-bold leading-none text-gray-400 hover:text-black"
+                    aria-label="Close"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                <div className="space-y-4 text-sm">
+                  <div className="grid grid-cols-2 gap-3 border border-gray-200 bg-gray-50 p-3.5">
+                    <div>
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500">
+                        Order ID
+                      </span>
+                      <p className="font-semibold text-gray-900">{selectedFeedback.orderId}</p>
+                    </div>
+
+                    <div>
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500">
+                        Customer Name
+                      </span>
+                      <p className="font-semibold text-gray-900">{selectedFeedback.customer}</p>
+                    </div>
+
+                    <div>
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500">
+                        Rating Given
+                      </span>
+                      <div className="mt-1 flex items-center gap-1">
+                        <span className="text-base text-yellow-500">
+                          {"★".repeat(selectedFeedback.rating)}
+                        </span>
+                        <span className="text-base text-gray-300">
+                          {"★".repeat(5 - selectedFeedback.rating)}
+                        </span>
+                        <span className="ml-1 text-xs font-semibold text-gray-600">
+                          ({selectedFeedback.rating} / 5)
+                        </span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500">
+                        Submitted Date
+                      </span>
+                      <p className="text-gray-800">{formatDate(selectedFeedback.createdAt)}</p>
+                    </div>
+                  </div>
+
+                  <div>
+                    <span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-gray-600">
+                      Feedback Description / Customer Comments:
+                    </span>
+                    <div className="rounded border border-gray-300 bg-gray-50 p-4 text-sm leading-relaxed text-gray-800 whitespace-pre-wrap font-medium">
+                      "{selectedFeedback.comments}"
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-6 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedFeedback(null)}
+                    className="bg-black px-6 py-2.5 text-xs font-semibold text-white hover:bg-gray-800"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
             </div>
-
-          </div>
+          )}
 
         </section>
       </div>

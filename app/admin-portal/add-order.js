@@ -3,7 +3,15 @@
 
 import { useState } from "react";
 
-export default function AddOrder({ onCreateOrder, onBack }) {
+export default function AddOrder({
+  onCreateOrder,
+  onDashboard,
+  onBack,
+  onAllOrders,
+  onAlterations,
+  onFeedback,
+  onLogout,
+}) {
   const [formData, setFormData] = useState({
     customer: "",
     phone: "",
@@ -146,70 +154,73 @@ export default function AddOrder({ onCreateOrder, onBack }) {
     <main className="min-h-screen bg-white text-gray-800">
 
       {/* Header */}
-      <header className="flex items-center justify-between border-b border-gray-300 px-6 py-4">
-
-        <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center border text-xs text-gray-500">
-            LOGO
-          </div>
-
-          <div>
-            <h2 className="text-lg font-bold">
-              Custom Made Designer Dress
-            </h2>
-            <p className="text-xs text-gray-500">
-              Designer Studio Management System
-            </p>
-          </div>
-        </div>
-
-        <span className="text-sm text-gray-500">
-          Admin Portal / Studio administrator
-        </span>
-
-      </header>
 
       <div className="flex">
 
         {/* Sidebar */}
-        <aside className="hidden w-56 shrink-0 border-r border-gray-300 bg-gray-100 p-4 md:block">
+        <aside className="w-56 shrink-0 border-r border-gray-300 bg-gray-100 p-4">
 
-          <h3 className="mb-5 text-xs font-bold text-gray-500">
+          <h3 className="mb-4 text-xs font-bold uppercase tracking-wide text-gray-500">
             ADMIN MENU
           </h3>
 
-          <div className="space-y-4 text-sm">
-            <p>Dashboard → Screen 3</p>
-            <p className="border-l-4 border-black bg-white p-2 font-bold">
-              Add Customer/Order → Screen 4
-            </p>
-            <p>All Orders</p>
-            <p>Update Status</p>
-            <p>Style Gallery → Screen 5</p>
-            <p>Alteration Requests</p>
-            <p>Customer Feedback</p>
-          </div>
+          <nav className="space-y-2">
+            <button
+              type="button"
+              onClick={onDashboard || onBack}
+              className="block w-full px-3 py-3 text-left text-sm hover:bg-white"
+            >
+              Dashboard
+            </button>
 
-          <button
-            onClick={onBack}
-            className="mt-8 text-sm text-gray-600 underline"
-          >
-            Logout → Screen 1
-          </button>
+            <button
+              type="button"
+              className="block w-full border-l-4 border-black bg-white px-3 py-3 text-left text-sm font-bold"
+            >
+              Add Customer/Order
+            </button>
+
+            <button
+              type="button"
+              onClick={onAllOrders}
+              className="block w-full px-3 py-3 text-left text-sm hover:bg-white"
+            >
+              All Orders
+            </button>
+
+            <button
+              type="button"
+              onClick={onAlterations || onDashboard || onBack}
+              className="block w-full px-3 py-3 text-left text-sm hover:bg-white"
+            >
+              Alteration Requests
+            </button>
+
+            <button
+              type="button"
+              onClick={onFeedback || onDashboard || onBack}
+              className="block w-full px-3 py-3 text-left text-sm hover:bg-white"
+            >
+              Customer Feedback
+            </button>
+
+            <button
+              type="button"
+              onClick={onLogout || onBack}
+              className="block w-full px-3 py-3 text-left text-sm hover:bg-white"
+            >
+              Logout
+            </button>
+          </nav>
 
         </aside>
 
         {/* Form */}
         <section className="min-w-0 flex-1 px-5 py-8 md:px-8">
 
-          <h1 className="text-2xl font-bold">
+          <h1 className="text-2xl pb-2 font-bold">
             Add Customer and Dress Order
           </h1>
-
-          <p className="mb-8 mt-2 text-sm text-gray-500">
-            Record customer details, measurements, and design requirements. * Required fields.
-          </p>
-
           <form onSubmit={handleSubmit}>
 
             {/* Customer Information */}
@@ -264,10 +275,6 @@ export default function AddOrder({ onCreateOrder, onBack }) {
             <h2 className="mb-3 border-b pb-2 text-lg font-bold">
               Body measurements
             </h2>
-
-            <p className="mb-5 text-xs text-gray-500">
-              Measurement unit: centimeters (cm). Record body measurements before adding fitting allowances.
-            </p>
 
             <div className="mb-8 grid gap-5 md:grid-cols-3">
 
@@ -480,19 +487,6 @@ export default function AddOrder({ onCreateOrder, onBack }) {
                   Estimate only; final price may change.
                 </p>
               </div>
-
-              <div>
-                <label className={labelClass}>
-                  Order ID automatically generated
-                </label>
-                <div className={`${inputClass} bg-gray-50 text-gray-500`}>
-                  Assigned after creation
-                </div>
-                <p className="mt-2 text-xs text-gray-500">
-                  A unique ID is assigned when the order is created.
-                </p>
-              </div>
-
             </div>
 
             {/* Error and Success */}
@@ -535,12 +529,6 @@ export default function AddOrder({ onCreateOrder, onBack }) {
               </button>
 
             </div>
-
-            <p className="mt-4 text-xs text-gray-500">
-              Create Order → Confirmation on this screen, then return to Screen 3.
-              Save as Draft → Retain incomplete details here; do not issue a customer Order ID until creation.
-            </p>
-
           </form>
 
         </section>

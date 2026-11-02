@@ -6,8 +6,7 @@ import { useState } from "react";
 import AdminLogin from "./admin-portal/login";
 import AdminDashboard from "./admin-portal/dashboard";
 import AddOrder from "./admin-portal/add-order";
-import UpdateStatus from "./admin-portal/update-status";
-import StyleGallery from "./admin-portal/style-gallery";
+import AllOrders from "./admin-portal/all-orders";
 
 import CustomerPortal from "./customer-portal/portal";
 import MyOrder from "./customer-portal/my-order";
@@ -139,44 +138,10 @@ const initialFeedback = [
 
 export default function Home() {
   const [screen, setScreen] = useState("welcome");
+  const [dashboardFilter, setDashboardFilter] = useState(null);
 
   const [orders, setOrders] = useState(initialOrders);
   const [selectedOrder, setSelectedOrder] = useState(null);
-
-  const [styles, setStyles] = useState([
-    {
-      id: 1,
-      name: "Classic Anarkali",
-      type: "Anarkali",
-      description:
-        "Full-length flare, fitted bodice, and a simple round neckline.",
-      image: "",
-    },
-    {
-      id: 2,
-      name: "Evening Gown",
-      type: "Party gown",
-      description:
-        "Floor-length A-line silhouette with a fitted waist and soft sleeves.",
-      image: "",
-    },
-    {
-      id: 3,
-      name: "Festive Lehenga",
-      type: "Lehenga",
-      description:
-        "Panelled skirt, matching blouse, and embroidery at the hem.",
-      image: "",
-    },
-    {
-      id: 4,
-      name: "Straight Kurta Set",
-      type: "Kurta set",
-      description:
-        "Straight-cut kurta with side slits and coordinated trousers.",
-      image: "",
-    },
-  ]);
 
   const [alterations, setAlterations] = useState(initialAlterations);
   const [feedback, setFeedback] = useState(initialFeedback);
@@ -312,12 +277,17 @@ export default function Home() {
     );
   }
 
+  const goToDashboard = (filter = null) => {
+    setDashboardFilter(filter);
+    setScreen("dashboard");
+  };
+
   // Admin Login
   if (screen === "login") {
     return (
       <AdminLogin
         onBack={() => setScreen("welcome")}
-        onSignIn={() => setScreen("dashboard")}
+        onSignIn={() => goToDashboard()}
       />
     );
   }
@@ -329,10 +299,10 @@ export default function Home() {
         orders={orders}
         alterations={alterations}
         feedback={feedback}
+        initialFilter={dashboardFilter}
         onUpdateAlterationStatus={updateAlterationStatus}
         onAddOrder={() => setScreen("add-order")}
-        onUpdateStatus={() => setScreen("update-status")}
-        onStyleGallery={() => setScreen("style-gallery")}
+        onAllOrders={() => setScreen("all-orders")}
         onLogout={() => setScreen("welcome")}
       />
     );
@@ -345,31 +315,30 @@ export default function Home() {
         onCreateOrder={(data) => {
           const newOrder = createOrder(data);
           setSelectedOrder(newOrder);
-          setScreen("dashboard");
+          goToDashboard();
         }}
-        onBack={() => setScreen("dashboard")}
+        onDashboard={() => goToDashboard()}
+        onAllOrders={() => setScreen("all-orders")}
+        onAlterations={() => goToDashboard("alterations")}
+        onFeedback={() => goToDashboard("feedback")}
+        onLogout={() => setScreen("welcome")}
+        onBack={() => goToDashboard()}
       />
     );
   }
 
-  // Update Order Status
-  if (screen === "update-status") {
+  // All Orders
+  if (screen === "all-orders") {
     return (
-      <UpdateStatus
+      <AllOrders
         orders={orders}
         onUpdate={updateOrder}
-        onBack={() => setScreen("dashboard")}
-      />
-    );
-  }
-
-  // Style Gallery
-  if (screen === "style-gallery") {
-    return (
-      <StyleGallery
-        styles={styles}
-        setStyles={setStyles}
-        onBack={() => setScreen("dashboard")}
+        onDashboard={() => goToDashboard()}
+        onAddOrder={() => setScreen("add-order")}
+        onAlterations={() => goToDashboard("alterations")}
+        onFeedback={() => goToDashboard("feedback")}
+        onLogout={() => setScreen("welcome")}
+        onBack={() => goToDashboard()}
       />
     );
   }
