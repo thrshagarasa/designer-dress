@@ -69,6 +69,74 @@ const initialOrders = [
   },
 ];
 
+// Initial alteration requests
+const initialAlterations = [
+  {
+    id: 1,
+    orderId: "DRS-2026-001",
+    customer: "Ananya Rao",
+    dress: "Anarkali",
+    delivery: "2026-11-04",
+    issueType: "Fit",
+    description: "Waist fitting is slightly snug, needs to be loosened by 0.5 inch.",
+    preferredDate: "2026-11-05",
+    status: "Reviewed",
+    createdAt: "2026-10-31T11:30:00.000Z",
+  },
+  {
+    id: 2,
+    orderId: "DRS-2026-003",
+    customer: "Kavya N.",
+    dress: "Lehenga",
+    delivery: "2026-11-08",
+    issueType: "Length",
+    description: "Skirt hemline touches the floor when walking, needs 1.5 inch reduction in length.",
+    preferredDate: "2026-11-09",
+    status: "Submitted",
+    createdAt: "2026-11-01T14:15:00.000Z",
+  },
+  {
+    id: 3,
+    orderId: "DRS-2026-002",
+    customer: "Meera Shetty",
+    dress: "Party gown",
+    delivery: "2026-11-06",
+    issueType: "Design",
+    description: "Requesting to add delicate pearl tassels to the back tie ribbons.",
+    preferredDate: "2026-11-07",
+    status: "Resolved",
+    createdAt: "2026-10-30T09:45:00.000Z",
+  },
+];
+
+// Initial customer feedback
+const initialFeedback = [
+  {
+    id: 1,
+    orderId: "DRS-2026-001",
+    customer: "Ananya Rao",
+    rating: 5,
+    comments: "Exquisite golden threadwork and premium silk fabric! The outfit exceeded my expectations for the reception.",
+    createdAt: "2026-10-31T17:20:00.000Z",
+  },
+  {
+    id: 2,
+    orderId: "DRS-2026-002",
+    customer: "Meera Shetty",
+    rating: 4,
+    comments: "Beautiful georgette drape and stunning pink shade. The studio team was very patient during measurement sessions.",
+    createdAt: "2026-11-01T16:00:00.000Z",
+  },
+  {
+    id: 3,
+    orderId: "DRS-2026-003",
+    customer: "Kavya N.",
+    rating: 5,
+    comments: "The royal red velvet lehenga feels luxurious. Outstanding craftsmanship by the tailoring team!",
+    createdAt: "2026-11-02T10:30:00.000Z",
+  },
+];
+
 export default function Home() {
   const [screen, setScreen] = useState("welcome");
 
@@ -110,8 +178,8 @@ export default function Home() {
     },
   ]);
 
-  const [alterations, setAlterations] = useState([]);
-  const [feedback, setFeedback] = useState([]);
+  const [alterations, setAlterations] = useState(initialAlterations);
+  const [feedback, setFeedback] = useState(initialFeedback);
 
   const [nextOrderNumber, setNextOrderNumber] = useState(4);
 
@@ -184,6 +252,15 @@ export default function Home() {
     ]);
   };
 
+  // Update alteration status from Admin Dashboard
+  const updateAlterationStatus = (id, newStatus) => {
+    setAlterations((previous) =>
+      previous.map((alt) =>
+        alt.id === id ? { ...alt, status: newStatus } : alt
+      )
+    );
+  };
+
   // Welcome Page
   if (screen === "welcome") {
     return (
@@ -252,6 +329,7 @@ export default function Home() {
         orders={orders}
         alterations={alterations}
         feedback={feedback}
+        onUpdateAlterationStatus={updateAlterationStatus}
         onAddOrder={() => setScreen("add-order")}
         onUpdateStatus={() => setScreen("update-status")}
         onStyleGallery={() => setScreen("style-gallery")}
