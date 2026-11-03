@@ -746,39 +746,6 @@ export default function AdminDashboard({
                   </div>
                 </>
               )}
-
-              {/* Summary cards — Alteration Requests & Customer Feedback */}
-              <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                <div
-                  onClick={() => handleCardClick("alterations")}
-                  className="cursor-pointer border border-gray-300 p-4 transition-all hover:border-gray-400 hover:shadow-md"
-                >
-                  <p className="text-sm font-semibold">
-                    Alteration Requests
-                  </p>
-                  <p className="mt-2 text-2xl font-bold">
-                    {String(alterations.length).padStart(2, "0")}
-                  </p>
-                  <p className="mt-2 text-xs text-gray-500">
-                
-                  </p>
-                </div>
-
-                <div
-                  onClick={() => handleCardClick("feedback")}
-                  className="cursor-pointer border border-gray-300 p-4 transition-all hover:border-gray-400 hover:shadow-md"
-                >
-                  <p className="text-sm font-semibold">
-                    Customer Feedback
-                  </p>
-                  <p className="mt-2 text-2xl font-bold">
-                    {String(feedback.length).padStart(2, "0")}
-                  </p>
-                  <p className="mt-2 text-xs text-gray-500">
-                  
-                  </p>
-                </div>
-              </div>
             </div>
           )}
 
