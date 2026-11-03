@@ -67,20 +67,7 @@ export default function AllOrders({
     <main className="min-h-screen bg-white text-gray-800">
 
       {/* Header */}
-      <header className="flex items-center justify-between border-b px-6 py-4">
-        <div>
-          <h1 className="text-xl font-bold">
-            Custom Made Designer Dress
-          </h1>
-          <p className="text-xs text-gray-500">
-            Designer Studio Management System
-          </p>
-        </div>
-
-        <span className="text-sm text-gray-500">
-          Admin Portal / All Orders
-        </span>
-      </header>
+      
 
       <div className="flex min-h-[calc(100vh-65px)]">
 
@@ -154,17 +141,11 @@ export default function AllOrders({
                 All Orders
               </h2>
               <p className="mt-1 text-sm text-gray-500">
-                View all customer dress orders and manage their production status.
+        
               </p>
             </div>
 
-            <button
-              type="button"
-              onClick={onAddOrder}
-              className="bg-black px-5 py-3 text-sm font-semibold text-white hover:bg-gray-800"
-            >
-              + Add New Order
-            </button>
+            
           </div>
 
           {/* Search and Status Filters */}
