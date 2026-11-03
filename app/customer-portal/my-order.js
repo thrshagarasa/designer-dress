@@ -14,7 +14,6 @@ export default function MyOrder({
         <div className="w-full max-w-md border bg-white p-8 text-center">
           <h2 className="text-xl font-bold">Order Not Found</h2>
           <p className="mt-3 text-sm text-gray-500">
-            Please enter your registered name and correct Order ID.
           </p>
           <button
             onClick={onBack}
@@ -45,10 +44,8 @@ export default function MyOrder({
 
         <div>
           <h1 className="text-xl font-bold">
-            Custom Made Designer Dress
           </h1>
           <p className="text-xs text-gray-500">
-            Customer Order Portal
           </p>
         </div>
 
@@ -69,7 +66,6 @@ export default function MyOrder({
             Welcome, {order.customer}
           </h2>
           <p className="mt-2 text-sm text-gray-500">
-            Here are the details and latest progress of your custom dress.
           </p>
         </div>
 
@@ -112,7 +108,6 @@ export default function MyOrder({
             </span>
 
             <p className="mt-5 text-xs text-gray-500">
-              PROGRESS NOTE
             </p>
 
             <p className="mt-2 text-sm leading-6">
@@ -126,7 +121,6 @@ export default function MyOrder({
         <div className="mb-6 border border-gray-200 bg-white p-6">
 
           <h3 className="mb-5 text-lg font-bold">
-            Your Dress Details
           </h3>
 
           <div className="grid gap-6 md:grid-cols-2">
@@ -140,7 +134,6 @@ export default function MyOrder({
                 />
               ) : (
                 <div className="flex h-64 items-center justify-center border bg-gray-50 text-sm text-gray-400">
-                  No dress reference photo available
                 </div>
               )}
             </div>
@@ -239,11 +232,9 @@ export default function MyOrder({
         <div className="border border-gray-200 bg-white p-6">
 
           <h3 className="mb-2 text-lg font-bold">
-            Need any assistance?
           </h3>
 
           <p className="mb-5 text-sm text-gray-500">
-            You can submit an alteration request or share your experience with our studio.
           </p>
 
           <div className="flex flex-wrap gap-3">
@@ -251,8 +242,7 @@ export default function MyOrder({
             <button
               onClick={onAlteration}
               className="bg-black px-5 py-3 text-sm font-semibold text-white hover:bg-gray-800"
-            >
-              Request Alteration
+            >Submit
             </button>
 
             <button
@@ -275,7 +265,6 @@ export default function MyOrder({
 
         {order.status === "Completed" && (
           <p className="mt-5 border border-green-200 bg-green-50 p-4 text-sm text-green-800">
-            Your dress is marked as ready for collection. Please contact the studio to arrange collection.
           </p>
         )}
 

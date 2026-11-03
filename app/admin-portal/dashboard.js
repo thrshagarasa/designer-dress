@@ -563,7 +563,7 @@ export default function AdminDashboard({
                     {String(pending).padStart(2, "0")}
                   </h3>
                   <p className="mt-2 text-xs text-gray-500">
-                    Click to view
+  
                   </p>
                 </div>
 
@@ -582,7 +582,7 @@ export default function AdminDashboard({
                     {String(inProgress).padStart(2, "0")}
                   </h3>
                   <p className="mt-2 text-xs text-gray-500">
-                    Click to view
+                  
                   </p>
                 </div>
 
@@ -601,7 +601,7 @@ export default function AdminDashboard({
                     {String(completed).padStart(2, "0")}
                   </h3>
                   <p className="mt-2 text-xs text-gray-500">
-                    Click to view
+                    
                   </p>
                 </div>
               </div>
@@ -760,7 +760,7 @@ export default function AdminDashboard({
                     {String(alterations.length).padStart(2, "0")}
                   </p>
                   <p className="mt-2 text-xs text-gray-500">
-                    Click to view
+                
                   </p>
                 </div>
 
@@ -775,7 +775,7 @@ export default function AdminDashboard({
                     {String(feedback.length).padStart(2, "0")}
                   </p>
                   <p className="mt-2 text-xs text-gray-500">
-                    Click to view
+                  
                   </p>
                 </div>
               </div>
