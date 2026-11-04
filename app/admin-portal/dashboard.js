@@ -136,15 +136,6 @@ export default function AdminDashboard({
     );
   };
 
-<<<<<<< HEAD
-  const filteredAlterations = activeFilter === "alterations"
-    ? alterations.filter(matchesAlterationSearch)
-    : [];
-
-  const filteredFeedback = activeFilter === "feedback"
-    ? feedback.filter(matchesFeedbackSearch)
-    : [];
-=======
   const filteredAlterations =
     activeFilter === "alterations"
       ? alterations.filter(matchesAlterationSearch)
@@ -154,7 +145,6 @@ export default function AdminDashboard({
     activeFilter === "feedback"
       ? feedback.filter(matchesFeedbackSearch)
       : [];
->>>>>>> 187ce439cc0c065d3b2afdd3dc0f5168561f949d
 
   const recentOrders = [...orders]
     .filter(matchesSearch)
@@ -598,16 +588,9 @@ export default function AdminDashboard({
               </h2>
 
               <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-<<<<<<< HEAD
                 <div
                   className="border border-gray-300 p-5 transition-all hover:border-gray-400 hover:shadow-md"
                 >
-=======
-
-                {/* PENDING CARD */}
-
-                <div className="border border-gray-300 p-5">
->>>>>>> 187ce439cc0c065d3b2afdd3dc0f5168561f949d
                   <p className="text-sm font-semibold">
                     Pending
                   </p>
@@ -617,15 +600,9 @@ export default function AdminDashboard({
                   </h3>
                 </div>
 
-<<<<<<< HEAD
                 <div
                   className="border border-gray-300 p-5 transition-all hover:border-gray-400 hover:shadow-md"
                 >
-=======
-                {/* IN PROGRESS CARD */}
-
-                <div className="border border-gray-300 p-5">
->>>>>>> 187ce439cc0c065d3b2afdd3dc0f5168561f949d
                   <p className="text-sm font-semibold">
                     In Progress
                   </p>
@@ -635,15 +612,9 @@ export default function AdminDashboard({
                   </h3>
                 </div>
 
-<<<<<<< HEAD
                 <div
                   className="border border-gray-300 p-5 transition-all hover:border-gray-400 hover:shadow-md"
                 >
-=======
-                {/* COMPLETED CARD */}
-
-                <div className="border border-gray-300 p-5">
->>>>>>> 187ce439cc0c065d3b2afdd3dc0f5168561f949d
                   <p className="text-sm font-semibold">
                     Completed
                   </p>
@@ -652,10 +623,8 @@ export default function AdminDashboard({
                     {String(completed).padStart(2, "0")}
                   </h3>
                 </div>
-
               </div>
 
-<<<<<<< HEAD
               {/* Recent Orders */}
               <div className="mb-3 flex items-center justify-between">
                 <h2 className="text-base font-bold">
@@ -701,7 +670,8 @@ export default function AdminDashboard({
                         </td>
                         <td className="border-b px-4 py-4">
                           <button
-                            onClick={onAllOrders}
+                            type="button"
+                            onClick={() => setSelectedOrder(order)}
                             className="underline hover:text-blue-700"
                           >
                             Open
@@ -720,111 +690,6 @@ export default function AdminDashboard({
                   </tbody>
                 </table>
               </div>
-=======
-              {/* RECENT ORDERS */}
-
-              {!activeFilter && (
-                <>
-
-                  <div className="mb-3 flex items-center justify-between">
-
-                    <h2 className="text-base font-bold">
-                      Recent orders
-                    </h2>
-
-                    <span className="text-xs text-gray-500">
-                      {recentOrders.length} recent orders
-                    </span>
-
-                  </div>
-
-                  <div className="overflow-x-auto border border-gray-300">
-
-                    <table className="w-full min-w-[750px] text-left text-sm">
-
-                      <thead className="bg-gray-100">
-                        <tr>
-                          <th className="border-b px-4 py-3">Order ID</th>
-                          <th className="border-b px-4 py-3">Customer name</th>
-                          <th className="border-b px-4 py-3">Dress type</th>
-                          <th className="border-b px-4 py-3">Delivery date</th>
-                          <th className="border-b px-4 py-3">Status</th>
-                          <th className="border-b px-4 py-3">Action</th>
-                        </tr>
-                      </thead>
-
-                      <tbody>
-
-                        {recentOrders.map((order) => (
-                          <tr key={order.id} className="hover:bg-gray-50">
-
-                            <td className="border-b px-4 py-4">
-                              {order.id}
-                            </td>
-
-                            <td className="border-b px-4 py-4">
-                              {order.customer}
-                            </td>
-
-                            <td className="border-b px-4 py-4">
-                              {order.dress}
-                            </td>
-
-                            <td className="border-b px-4 py-4">
-                              {order.delivery}
-                            </td>
-
-                            <td className="border-b px-4 py-4">
-
-                              <span
-                                className={`rounded px-2 py-1 text-xs font-semibold ${
-                                  order.status === "Pending"
-                                    ? "bg-yellow-100 text-yellow-800"
-                                    : order.status === "In Progress"
-                                    ? "bg-blue-100 text-blue-800"
-                                    : "bg-green-100 text-green-800"
-                                }`}
-                              >
-                                {order.status}
-                              </span>
-
-                            </td>
-
-                            {/* OPEN BUTTON */}
-
-                            <td className="border-b px-4 py-4">
-
-                              <button
-                                type="button"
-                                onClick={() => setSelectedOrder(order)}
-                                className="underline hover:text-blue-700"
-                              >
-                                Open
-                              </button>
-
-                            </td>
-
-                          </tr>
-                        ))}
-
-                        {recentOrders.length === 0 && (
-                          <tr>
-                            <td colSpan="6" className="px-4 py-8 text-center text-gray-500">
-                              No orders available.
-                            </td>
-                          </tr>
-                        )}
-
-                      </tbody>
-
-                    </table>
-
-                  </div>
-
-                </>
-              )}
-
->>>>>>> 187ce439cc0c065d3b2afdd3dc0f5168561f949d
             </div>
           )}
 
