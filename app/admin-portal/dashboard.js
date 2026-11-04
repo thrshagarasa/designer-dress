@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -82,6 +83,7 @@ export default function AdminDashboard({
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedAlteration, setSelectedAlteration] = useState(null);
   const [selectedFeedback, setSelectedFeedback] = useState(null);
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
   const pending = orders.filter(
     (order) => order.status === "Pending"
@@ -98,6 +100,7 @@ export default function AdminDashboard({
   const matchesSearch = (order) => {
     if (!searchQuery.trim()) return true;
     const q = searchQuery.toLowerCase();
+
     return (
       order.id?.toLowerCase().includes(q) ||
       order.customer?.toLowerCase().includes(q) ||
@@ -110,6 +113,7 @@ export default function AdminDashboard({
   const matchesAlterationSearch = (alt) => {
     if (!searchQuery.trim()) return true;
     const q = searchQuery.toLowerCase();
+
     return (
       alt.orderId?.toLowerCase().includes(q) ||
       alt.customer?.toLowerCase().includes(q) ||
@@ -123,6 +127,7 @@ export default function AdminDashboard({
   const matchesFeedbackSearch = (fb) => {
     if (!searchQuery.trim()) return true;
     const q = searchQuery.toLowerCase();
+
     return (
       fb.orderId?.toLowerCase().includes(q) ||
       fb.customer?.toLowerCase().includes(q) ||
@@ -131,6 +136,7 @@ export default function AdminDashboard({
     );
   };
 
+<<<<<<< HEAD
   const filteredAlterations = activeFilter === "alterations"
     ? alterations.filter(matchesAlterationSearch)
     : [];
@@ -138,6 +144,17 @@ export default function AdminDashboard({
   const filteredFeedback = activeFilter === "feedback"
     ? feedback.filter(matchesFeedbackSearch)
     : [];
+=======
+  const filteredAlterations =
+    activeFilter === "alterations"
+      ? alterations.filter(matchesAlterationSearch)
+      : [];
+
+  const filteredFeedback =
+    activeFilter === "feedback"
+      ? feedback.filter(matchesFeedbackSearch)
+      : [];
+>>>>>>> 187ce439cc0c065d3b2afdd3dc0f5168561f949d
 
   const recentOrders = [...orders]
     .filter(matchesSearch)
@@ -152,6 +169,7 @@ export default function AdminDashboard({
         setSearchQuery("");
         setSelectedAlteration(null);
         setSelectedFeedback(null);
+        setSelectedOrder(null);
       },
     },
     { name: "Add Customer/Order", action: onAddOrder },
@@ -163,6 +181,7 @@ export default function AdminDashboard({
         setSearchQuery("");
         setSelectedAlteration(null);
         setSelectedFeedback(null);
+        setSelectedOrder(null);
       },
     },
     {
@@ -172,12 +191,14 @@ export default function AdminDashboard({
         setSearchQuery("");
         setSelectedAlteration(null);
         setSelectedFeedback(null);
+        setSelectedOrder(null);
       },
     },
   ];
 
   const formatDate = (dateStr) => {
     if (!dateStr) return "—";
+
     try {
       return new Date(dateStr).toLocaleDateString("en-IN", {
         day: "2-digit",
@@ -194,7 +215,8 @@ export default function AdminDashboard({
 
       <div className="flex min-h-[calc(100vh-65px)]">
 
-        {/* Sidebar */}
+        {/* SIDEBAR */}
+
         <aside className="w-56 shrink-0 border-r border-gray-300 bg-gray-100 p-4">
 
           <h3 className="mb-4 text-xs font-bold uppercase tracking-wide text-gray-500">
@@ -235,17 +257,22 @@ export default function AdminDashboard({
 
         </aside>
 
-        {/* Main Content Area */}
+        {/* MAIN CONTENT */}
+
         <section className="min-w-0 flex-1 p-6">
 
-          {/* VIEW 1: ONLY ALTERATION REQUESTS & SEARCH BAR */}
+          {/* VIEW 1: ALTERATION REQUESTS */}
+
           {activeFilter === "alterations" && (
             <div>
+
               <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+
                 <div>
                   <h1 className="text-2xl font-bold">
                     Alteration Requests
                   </h1>
+
                   <p className="mt-1 text-sm text-gray-500">
                     Showing all customer alteration requests ({filteredAlterations.length}). Click any row to view full description.
                   </p>
@@ -261,9 +288,11 @@ export default function AdminDashboard({
                 >
                   ← Back to Dashboard
                 </button>
+
               </div>
 
-              {/* Search Bar */}
+              {/* SEARCH BAR */}
+
               <div className="mb-6">
                 <input
                   type="text"
@@ -274,9 +303,12 @@ export default function AdminDashboard({
                 />
               </div>
 
-              {/* Alteration Requests Table */}
+              {/* ALTERATION TABLE */}
+
               <div className="overflow-x-auto border border-gray-300">
+
                 <table className="w-full min-w-[750px] text-left text-sm">
+
                   <thead className="bg-gray-100">
                     <tr>
                       <th className="border-b px-4 py-3">Order ID</th>
@@ -292,12 +324,14 @@ export default function AdminDashboard({
                   </thead>
 
                   <tbody>
+
                     {filteredAlterations.map((alt) => (
                       <tr
                         key={alt.id}
                         onClick={() => setSelectedAlteration(alt)}
-                        className="cursor-pointer hover:bg-gray-50 transition-colors"
+                        className="cursor-pointer transition-colors hover:bg-gray-50"
                       >
+
                         <td className="border-b px-4 py-4 font-semibold">
                           {alt.orderId}
                         </td>
@@ -316,8 +350,8 @@ export default function AdminDashboard({
                           </span>
                         </td>
 
-                        <td className="border-b px-4 py-4 max-w-[220px]" title="Click to view full description">
-                          <div className="truncate text-gray-700 font-medium">
+                        <td className="max-w-[220px] border-b px-4 py-4" title="Click to view full description">
+                          <div className="truncate font-medium text-gray-700">
                             {alt.description}
                           </div>
                           <span className="text-[11px] text-blue-600 underline">
@@ -352,13 +386,15 @@ export default function AdminDashboard({
                           onClick={(e) => e.stopPropagation()}
                         >
                           <div className="flex items-center gap-2">
+
                             <button
                               type="button"
                               onClick={() => setSelectedAlteration(alt)}
-                              className="rounded border border-gray-300 px-2.5 py-1 text-xs font-semibold hover:bg-gray-100 whitespace-nowrap"
+                              className="whitespace-nowrap rounded border border-gray-300 px-2.5 py-1 text-xs font-semibold hover:bg-gray-100"
                             >
                               View
                             </button>
+
                             <select
                               value={alt.status}
                               onChange={(e) =>
@@ -370,8 +406,10 @@ export default function AdminDashboard({
                               <option value="Reviewed">Reviewed</option>
                               <option value="Resolved">Resolved</option>
                             </select>
+
                           </div>
                         </td>
+
                       </tr>
                     ))}
 
@@ -382,20 +420,28 @@ export default function AdminDashboard({
                         </td>
                       </tr>
                     )}
+
                   </tbody>
+
                 </table>
+
               </div>
+
             </div>
           )}
 
-          {/* VIEW 2: ONLY CUSTOMER FEEDBACK & SEARCH BAR */}
+          {/* VIEW 2: CUSTOMER FEEDBACK */}
+
           {activeFilter === "feedback" && (
             <div>
+
               <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+
                 <div>
                   <h1 className="text-2xl font-bold">
                     Customer Feedback
                   </h1>
+
                   <p className="mt-1 text-sm text-gray-500">
                     Showing all customer ratings and feedback reviews ({filteredFeedback.length}). Click any row to view full feedback.
                   </p>
@@ -411,9 +457,11 @@ export default function AdminDashboard({
                 >
                   ← Back to Dashboard
                 </button>
+
               </div>
 
-              {/* Search Bar */}
+              {/* SEARCH BAR */}
+
               <div className="mb-6">
                 <input
                   type="text"
@@ -424,9 +472,12 @@ export default function AdminDashboard({
                 />
               </div>
 
-              {/* Customer Feedback Table */}
+              {/* FEEDBACK TABLE */}
+
               <div className="overflow-x-auto border border-gray-300">
+
                 <table className="w-full min-w-[750px] text-left text-sm">
+
                   <thead className="bg-gray-100">
                     <tr>
                       <th className="border-b px-4 py-3">Order ID</th>
@@ -439,12 +490,14 @@ export default function AdminDashboard({
                   </thead>
 
                   <tbody>
+
                     {filteredFeedback.map((fb) => (
                       <tr
                         key={fb.id}
                         onClick={() => setSelectedFeedback(fb)}
-                        className="cursor-pointer hover:bg-gray-50 transition-colors"
+                        className="cursor-pointer transition-colors hover:bg-gray-50"
                       >
+
                         <td className="border-b px-4 py-4 font-semibold">
                           {fb.orderId}
                         </td>
@@ -465,8 +518,8 @@ export default function AdminDashboard({
                           </span>
                         </td>
 
-                        <td className="border-b px-4 py-4 max-w-[300px]" title="Click to read full feedback">
-                          <div className="truncate text-gray-700 font-medium">
+                        <td className="max-w-[300px] border-b px-4 py-4" title="Click to read full feedback">
+                          <div className="truncate font-medium text-gray-700">
                             {fb.comments}
                           </div>
                           <span className="text-[11px] text-blue-600 underline">
@@ -485,11 +538,12 @@ export default function AdminDashboard({
                           <button
                             type="button"
                             onClick={() => setSelectedFeedback(fb)}
-                            className="rounded border border-gray-300 px-3 py-1 text-xs font-semibold hover:bg-gray-100 whitespace-nowrap"
+                            className="whitespace-nowrap rounded border border-gray-300 px-3 py-1 text-xs font-semibold hover:bg-gray-100"
                           >
                             View Details
                           </button>
                         </td>
+
                       </tr>
                     ))}
 
@@ -500,16 +554,23 @@ export default function AdminDashboard({
                         </td>
                       </tr>
                     )}
+
                   </tbody>
+
                 </table>
+
               </div>
+
             </div>
           )}
 
-          {/* VIEW 3: STANDARD DASHBOARD OVERVIEW (shown only when NOT on alterations or feedback) */}
+          {/* VIEW 3: STANDARD DASHBOARD */}
+
           {activeFilter !== "alterations" && activeFilter !== "feedback" && (
             <div>
-              {/* Heading */}
+
+              {/* HEADING */}
+
               <div className="mb-7 flex flex-wrap items-center justify-between gap-4">
                 <div>
                   <h1 className="text-2xl font-bold">
@@ -518,7 +579,8 @@ export default function AdminDashboard({
                 </div>
               </div>
 
-              {/* Search Bar */}
+              {/* SEARCH BAR */}
+
               <div className="mb-6">
                 <input
                   type="text"
@@ -529,55 +591,71 @@ export default function AdminDashboard({
                 />
               </div>
 
-              {/* Order Overview */}
+              {/* ORDER OVERVIEW */}
+
               <h2 className="mb-3 text-base font-bold">
                 Order overview
               </h2>
 
               <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+<<<<<<< HEAD
                 <div
                   className="border border-gray-300 p-5 transition-all hover:border-gray-400 hover:shadow-md"
                 >
+=======
+
+                {/* PENDING CARD */}
+
+                <div className="border border-gray-300 p-5">
+>>>>>>> 187ce439cc0c065d3b2afdd3dc0f5168561f949d
                   <p className="text-sm font-semibold">
                     Pending
                   </p>
+
                   <h3 className="mt-2 text-3xl font-bold">
                     {String(pending).padStart(2, "0")}
                   </h3>
-                  <p className="mt-2 text-xs text-gray-500">
-  
-                  </p>
                 </div>
 
+<<<<<<< HEAD
                 <div
                   className="border border-gray-300 p-5 transition-all hover:border-gray-400 hover:shadow-md"
                 >
+=======
+                {/* IN PROGRESS CARD */}
+
+                <div className="border border-gray-300 p-5">
+>>>>>>> 187ce439cc0c065d3b2afdd3dc0f5168561f949d
                   <p className="text-sm font-semibold">
                     In Progress
                   </p>
+
                   <h3 className="mt-2 text-3xl font-bold">
                     {String(inProgress).padStart(2, "0")}
                   </h3>
-                  <p className="mt-2 text-xs text-gray-500">
-                  
-                  </p>
                 </div>
 
+<<<<<<< HEAD
                 <div
                   className="border border-gray-300 p-5 transition-all hover:border-gray-400 hover:shadow-md"
                 >
+=======
+                {/* COMPLETED CARD */}
+
+                <div className="border border-gray-300 p-5">
+>>>>>>> 187ce439cc0c065d3b2afdd3dc0f5168561f949d
                   <p className="text-sm font-semibold">
                     Completed
                   </p>
+
                   <h3 className="mt-2 text-3xl font-bold">
                     {String(completed).padStart(2, "0")}
                   </h3>
-                  <p className="mt-2 text-xs text-gray-500">
-                    
-                  </p>
                 </div>
+
               </div>
 
+<<<<<<< HEAD
               {/* Recent Orders */}
               <div className="mb-3 flex items-center justify-between">
                 <h2 className="text-base font-bold">
@@ -642,17 +720,127 @@ export default function AdminDashboard({
                   </tbody>
                 </table>
               </div>
+=======
+              {/* RECENT ORDERS */}
+
+              {!activeFilter && (
+                <>
+
+                  <div className="mb-3 flex items-center justify-between">
+
+                    <h2 className="text-base font-bold">
+                      Recent orders
+                    </h2>
+
+                    <span className="text-xs text-gray-500">
+                      {recentOrders.length} recent orders
+                    </span>
+
+                  </div>
+
+                  <div className="overflow-x-auto border border-gray-300">
+
+                    <table className="w-full min-w-[750px] text-left text-sm">
+
+                      <thead className="bg-gray-100">
+                        <tr>
+                          <th className="border-b px-4 py-3">Order ID</th>
+                          <th className="border-b px-4 py-3">Customer name</th>
+                          <th className="border-b px-4 py-3">Dress type</th>
+                          <th className="border-b px-4 py-3">Delivery date</th>
+                          <th className="border-b px-4 py-3">Status</th>
+                          <th className="border-b px-4 py-3">Action</th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+
+                        {recentOrders.map((order) => (
+                          <tr key={order.id} className="hover:bg-gray-50">
+
+                            <td className="border-b px-4 py-4">
+                              {order.id}
+                            </td>
+
+                            <td className="border-b px-4 py-4">
+                              {order.customer}
+                            </td>
+
+                            <td className="border-b px-4 py-4">
+                              {order.dress}
+                            </td>
+
+                            <td className="border-b px-4 py-4">
+                              {order.delivery}
+                            </td>
+
+                            <td className="border-b px-4 py-4">
+
+                              <span
+                                className={`rounded px-2 py-1 text-xs font-semibold ${
+                                  order.status === "Pending"
+                                    ? "bg-yellow-100 text-yellow-800"
+                                    : order.status === "In Progress"
+                                    ? "bg-blue-100 text-blue-800"
+                                    : "bg-green-100 text-green-800"
+                                }`}
+                              >
+                                {order.status}
+                              </span>
+
+                            </td>
+
+                            {/* OPEN BUTTON */}
+
+                            <td className="border-b px-4 py-4">
+
+                              <button
+                                type="button"
+                                onClick={() => setSelectedOrder(order)}
+                                className="underline hover:text-blue-700"
+                              >
+                                Open
+                              </button>
+
+                            </td>
+
+                          </tr>
+                        ))}
+
+                        {recentOrders.length === 0 && (
+                          <tr>
+                            <td colSpan="6" className="px-4 py-8 text-center text-gray-500">
+                              No orders available.
+                            </td>
+                          </tr>
+                        )}
+
+                      </tbody>
+
+                    </table>
+
+                  </div>
+
+                </>
+              )}
+
+>>>>>>> 187ce439cc0c065d3b2afdd3dc0f5168561f949d
             </div>
           )}
 
-          {/* MODAL 1: FULL ALTERATION REQUEST DETAILS & DESCRIPTION */}
+          {/* MODAL 1: ALTERATION DETAILS */}
+
           {selectedAlteration && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+
               <div className="w-full max-w-lg border border-gray-300 bg-white p-6 shadow-2xl">
+
                 <div className="mb-4 flex items-center justify-between border-b pb-3">
+
                   <h3 className="text-lg font-bold">
                     Alteration Request Details
                   </h3>
+
                   <button
                     type="button"
                     onClick={() => setSelectedAlteration(null)}
@@ -661,71 +849,95 @@ export default function AdminDashboard({
                   >
                     ×
                   </button>
+
                 </div>
 
                 <div className="space-y-4 text-sm">
+
                   <div className="grid grid-cols-2 gap-3 border border-gray-200 bg-gray-50 p-3.5">
+
                     <div>
                       <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500">
                         Order ID
                       </span>
-                      <p className="font-semibold text-gray-900">{selectedAlteration.orderId}</p>
+                      <p className="font-semibold text-gray-900">
+                        {selectedAlteration.orderId}
+                      </p>
                     </div>
 
                     <div>
                       <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500">
                         Customer
                       </span>
-                      <p className="font-semibold text-gray-900">{selectedAlteration.customer}</p>
+                      <p className="font-semibold text-gray-900">
+                        {selectedAlteration.customer}
+                      </p>
                     </div>
 
                     <div>
                       <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500">
                         Dress Type
                       </span>
-                      <p className="text-gray-800">{selectedAlteration.dress || "—"}</p>
+                      <p className="text-gray-800">
+                        {selectedAlteration.dress || "—"}
+                      </p>
                     </div>
 
                     <div>
                       <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500">
                         Issue Type
                       </span>
-                      <p className="font-semibold text-orange-700">{selectedAlteration.issueType}</p>
+                      <p className="font-semibold text-orange-700">
+                        {selectedAlteration.issueType}
+                      </p>
                     </div>
 
                     <div>
                       <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500">
                         Preferred Date
                       </span>
-                      <p className="text-gray-800">{selectedAlteration.preferredDate || "—"}</p>
+                      <p className="text-gray-800">
+                        {selectedAlteration.preferredDate || "—"}
+                      </p>
                     </div>
 
                     <div>
                       <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500">
                         Submitted Date
                       </span>
-                      <p className="text-gray-800">{formatDate(selectedAlteration.createdAt)}</p>
+                      <p className="text-gray-800">
+                        {formatDate(selectedAlteration.createdAt)}
+                      </p>
                     </div>
+
                   </div>
 
                   <div>
                     <span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-gray-600">
                       Customer Description / What they have requested:
                     </span>
-                    <div className="rounded border border-gray-300 bg-gray-50 p-4 text-sm leading-relaxed text-gray-800 whitespace-pre-wrap font-medium">
+
+                    <div className="whitespace-pre-wrap rounded border border-gray-300 bg-gray-50 p-4 text-sm font-medium leading-relaxed text-gray-800">
                       {selectedAlteration.description}
                     </div>
                   </div>
 
                   <div>
+
                     <span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-gray-600">
                       Update Request Status:
                     </span>
+
                     <select
                       value={selectedAlteration.status}
                       onChange={(e) => {
                         const newStatus = e.target.value;
-                        onUpdateAlterationStatus?.(selectedAlteration.id, newStatus);
+
+                        onUpdateAlterationStatus?.(
+                          selectedAlteration.id,
+                          newStatus
+                        );
+
                         setSelectedAlteration((prev) => ({
                           ...prev,
                           status: newStatus,
@@ -737,7 +949,9 @@ export default function AdminDashboard({
                       <option value="Reviewed">Reviewed</option>
                       <option value="Resolved">Resolved</option>
                     </select>
+
                   </div>
+
                 </div>
 
                 <div className="mt-6 flex justify-end">
@@ -749,18 +963,25 @@ export default function AdminDashboard({
                     Close
                   </button>
                 </div>
+
               </div>
+
             </div>
           )}
 
-          {/* MODAL 2: FULL CUSTOMER FEEDBACK & DESCRIPTION */}
+          {/* MODAL 2: CUSTOMER FEEDBACK DETAILS */}
+
           {selectedFeedback && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+
               <div className="w-full max-w-lg border border-gray-300 bg-white p-6 shadow-2xl">
+
                 <div className="mb-4 flex items-center justify-between border-b pb-3">
+
                   <h3 className="text-lg font-bold">
                     Customer Feedback Review
                   </h3>
+
                   <button
                     type="button"
                     onClick={() => setSelectedFeedback(null)}
@@ -769,38 +990,50 @@ export default function AdminDashboard({
                   >
                     ×
                   </button>
+
                 </div>
 
                 <div className="space-y-4 text-sm">
+
                   <div className="grid grid-cols-2 gap-3 border border-gray-200 bg-gray-50 p-3.5">
+
                     <div>
                       <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500">
                         Order ID
                       </span>
-                      <p className="font-semibold text-gray-900">{selectedFeedback.orderId}</p>
+                      <p className="font-semibold text-gray-900">
+                        {selectedFeedback.orderId}
+                      </p>
                     </div>
 
                     <div>
                       <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500">
                         Customer Name
                       </span>
-                      <p className="font-semibold text-gray-900">{selectedFeedback.customer}</p>
+                      <p className="font-semibold text-gray-900">
+                        {selectedFeedback.customer}
+                      </p>
                     </div>
 
                     <div>
                       <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500">
                         Rating Given
                       </span>
+
                       <div className="mt-1 flex items-center gap-1">
+
                         <span className="text-base text-yellow-500">
                           {"★".repeat(selectedFeedback.rating)}
                         </span>
+
                         <span className="text-base text-gray-300">
                           {"★".repeat(5 - selectedFeedback.rating)}
                         </span>
+
                         <span className="ml-1 text-xs font-semibold text-gray-600">
                           ({selectedFeedback.rating} / 5)
                         </span>
+
                       </div>
                     </div>
 
@@ -808,18 +1041,25 @@ export default function AdminDashboard({
                       <span className="text-[11px] font-bold uppercase tracking-wider text-gray-500">
                         Submitted Date
                       </span>
-                      <p className="text-gray-800">{formatDate(selectedFeedback.createdAt)}</p>
+                      <p className="text-gray-800">
+                        {formatDate(selectedFeedback.createdAt)}
+                      </p>
                     </div>
+
                   </div>
 
                   <div>
+
                     <span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-gray-600">
                       Feedback Description / Customer Comments:
                     </span>
-                    <div className="rounded border border-gray-300 bg-gray-50 p-4 text-sm leading-relaxed text-gray-800 whitespace-pre-wrap font-medium">
+
+                    <div className="whitespace-pre-wrap rounded border border-gray-300 bg-gray-50 p-4 text-sm font-medium leading-relaxed text-gray-800">
                       "{selectedFeedback.comments}"
                     </div>
+
                   </div>
+
                 </div>
 
                 <div className="mt-6 flex justify-end">
@@ -831,11 +1071,84 @@ export default function AdminDashboard({
                     Close
                   </button>
                 </div>
+
               </div>
+
+            </div>
+          )}
+
+          {/* MODAL 3: CUSTOMER ORDER DETAILS */}
+
+          {selectedOrder && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+
+              <div className="w-full max-w-lg border border-gray-300 bg-white p-6 shadow-xl">
+
+                <div className="mb-5 flex items-center justify-between border-b pb-3">
+
+                  <h2 className="text-xl font-bold">
+                    Customer Details
+                  </h2>
+
+                  <button
+                    type="button"
+                    onClick={() => setSelectedOrder(null)}
+                    className="text-2xl font-bold text-gray-500 hover:text-black"
+                    aria-label="Close"
+                  >
+                    ×
+                  </button>
+
+                </div>
+
+                <div className="space-y-4 text-sm">
+
+                  <p>
+                    <strong>Customer Name:</strong>{" "}
+                    {selectedOrder.customer}
+                  </p>
+
+                  <p>
+                    <strong>Order ID:</strong>{" "}
+                    {selectedOrder.id}
+                  </p>
+
+                  <p>
+                    <strong>Dress Type:</strong>{" "}
+                    {selectedOrder.dress}
+                  </p>
+
+                  <p>
+                    <strong>Delivery Date:</strong>{" "}
+                    {selectedOrder.delivery}
+                  </p>
+
+                  <p>
+                    <strong>Order Status:</strong>{" "}
+                    {selectedOrder.status}
+                  </p>
+
+                </div>
+
+                <div className="mt-6 flex justify-end">
+
+                  <button
+                    type="button"
+                    onClick={() => setSelectedOrder(null)}
+                    className="bg-black px-5 py-2 text-white hover:bg-gray-800"
+                  >
+                    Close
+                  </button>
+
+                </div>
+
+              </div>
+
             </div>
           )}
 
         </section>
+
       </div>
 
     </main>

@@ -1,4 +1,4 @@
-
+﻿
 "use client";
 
 import { useState } from "react";
@@ -450,8 +450,7 @@ export default function AddOrder({
               Order information
             </h2>
 
-            <div className="mb-8 grid gap-5 md:grid-cols-3">
-
+<div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2">
               <div>
                 <label className={labelClass}>
                   Delivery date *
@@ -465,9 +464,6 @@ export default function AddOrder({
                   required
                   className={inputClass}
                 />
-                <p className="mt-2 text-xs text-gray-500">
-                  Select a future delivery date.
-                </p>
               </div>
 
               <div>
@@ -483,9 +479,6 @@ export default function AddOrder({
                   placeholder="₹ Enter amount"
                   className={inputClass}
                 />
-                <p className="mt-2 text-xs text-gray-500">
-                  Estimate only; final price may change.
-                </p>
               </div>
             </div>
 
