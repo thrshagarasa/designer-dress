@@ -5,11 +5,12 @@ import { useState } from "react";
 
 export default function AlterationFeedback({
   order,
+  initialTab = "alteration",
   onSubmitAlteration,
   onSubmitFeedback,
   onBack,
 }) {
-  const [activeTab, setActiveTab] = useState("alteration");
+  const [activeForm, setActiveForm] = useState(initialTab);
 
   const [alteration, setAlteration] = useState({
     issueType: "",
@@ -19,15 +20,18 @@ export default function AlterationFeedback({
 
   const [feedback, setFeedback] = useState({
     rating: 0,
+    resolution: "",
     comments: "",
   });
 
-  const [alterationMessage, setAlterationMessage] = useState("");
-  const [feedbackMessage, setFeedbackMessage] = useState("");
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [alterationSubmitted, setAlterationSubmitted] = useState(false);
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
 
   const today = new Date().toISOString().split("T")[0];
 
+  // UPDATE ALTERATION FIELDS
   const updateAlteration = (e) => {
     const { name, value } = e.target;
 
@@ -37,6 +41,7 @@ export default function AlterationFeedback({
     }));
   };
 
+  // UPDATE FEEDBACK FIELDS
   const updateFeedback = (e) => {
     const { name, value } = e.target;
 
@@ -46,10 +51,12 @@ export default function AlterationFeedback({
     }));
   };
 
+  // SUBMIT ALTERATION
   const handleAlterationSubmit = (e) => {
     e.preventDefault();
+
     setError("");
-    setAlterationMessage("");
+    setSuccessMessage("");
 
     if (!order) {
       setError("Order information is unavailable.");
@@ -70,7 +77,7 @@ export default function AlterationFeedback({
       return;
     }
 
-    onSubmitAlteration({
+    const alterationData = {
       orderId: order.id || order.orderId,
       customer: order.customer,
       dress: order.dress,
@@ -80,23 +87,27 @@ export default function AlterationFeedback({
       preferredDate: alteration.preferredDate,
       status: "Submitted",
       createdAt: new Date().toISOString(),
-    });
+    };
 
-    setAlteration({
-      issueType: "",
-      description: "",
-      preferredDate: "",
-    });
+    onSubmitAlteration?.(alterationData);
 
-    setAlterationMessage(
+    setAlterationSubmitted(true);
+
+    setSuccessMessage(
       "Your alteration request has been submitted successfully."
     );
+
+    // AUTOMATICALLY OPEN FEEDBACK FORM
+    setActiveForm("feedback");
+    setError("");
   };
 
+  // SUBMIT FEEDBACK
   const handleFeedbackSubmit = (e) => {
     e.preventDefault();
+
     setError("");
-    setFeedbackMessage("");
+    setSuccessMessage("");
 
     if (!order) {
       setError("Order information is unavailable.");
@@ -108,43 +119,56 @@ export default function AlterationFeedback({
       return;
     }
 
+    if (!feedback.resolution) {
+      setError("Please tell us whether your problem has been solved.");
+      return;
+    }
+
     if (!feedback.comments.trim()) {
       setError("Please enter your feedback comments.");
       return;
     }
 
-    onSubmitFeedback({
+    const feedbackData = {
       orderId: order.id || order.orderId,
       customer: order.customer,
       rating: feedback.rating,
+      resolution: feedback.resolution,
       comments: feedback.comments.trim(),
       createdAt: new Date().toISOString(),
-    });
+    };
 
-    setFeedback({
-      rating: 0,
-      comments: "",
-    });
+    onSubmitFeedback?.(feedbackData);
 
-    setFeedbackMessage(
+    setFeedbackSubmitted(true);
+
+    setSuccessMessage(
       "Thank you! Your feedback has been submitted successfully."
     );
   };
 
+  // ORDER NOT FOUND
   if (!order) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-gray-100 p-5">
-        <div className="max-w-md border bg-white p-8 text-center">
-          <h2 className="text-xl font-bold">Order Not Found</h2>
+        <div className="max-w-md border border-gray-300 bg-white p-8 text-center">
+
+          <h2 className="text-xl font-bold">
+            Order Not Found
+          </h2>
+
           <p className="mt-3 text-sm text-gray-500">
             Please return to the customer portal and search for your order again.
           </p>
+
           <button
+            type="button"
             onClick={onBack}
             className="mt-5 bg-black px-5 py-3 text-sm text-white"
           >
             Back
           </button>
+
         </div>
       </main>
     );
@@ -153,37 +177,32 @@ export default function AlterationFeedback({
   return (
     <main className="min-h-screen bg-gray-100 text-gray-800">
 
-      {/* Header */}
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b bg-white px-6 py-5">
+      {/* HEADER */}
+      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-gray-300 bg-white px-6 py-5">
+
         <div>
-          <h1 className="text-xl font-bold">
-            Custom Made Designer Dress
+          <h1 className="text-xl font-bold text-black">
+            {activeForm === "alteration"
+              ? "Alteration Request"
+              : "Customer Feedback"}
           </h1>
-          <p className="text-xs text-gray-500">
-            Customer Portal
-          </p>
         </div>
 
         <button
+          type="button"
           onClick={onBack}
           className="border border-gray-400 px-4 py-2 text-sm hover:bg-gray-100"
         >
           Back to My Order
         </button>
+
       </header>
 
       <section className="mx-auto max-w-3xl px-5 py-8">
 
-        <h2 className="text-2xl font-bold">
-          Alteration Request and Feedback
-        </h2>
-
-        <p className="mb-6 mt-2 text-sm text-gray-500">
-          Submit an alteration request or share your experience with our studio.
-        </p>
-
-        {/* Order Information */}
+        {/* ORDER INFORMATION */}
         <div className="mb-6 grid gap-4 border border-gray-200 bg-white p-5 sm:grid-cols-3">
+
           <div>
             <p className="text-xs text-gray-500">ORDER ID</p>
             <p className="mt-1 font-semibold">
@@ -204,55 +223,34 @@ export default function AlterationFeedback({
               {order.dress}
             </p>
           </div>
+
         </div>
 
-        {/* Tabs */}
-        <div className="mb-6 flex border-b border-gray-300">
-          <button
-            type="button"
-            onClick={() => {
-              setActiveTab("alteration");
-              setError("");
-            }}
-            className={`px-5 py-3 text-sm font-semibold ${
-              activeTab === "alteration"
-                ? "border-b-2 border-black text-black"
-                : "text-gray-500"
-            }`}
-          >
-            Alteration Request
-          </button>
+        {/* SUCCESS MESSAGE */}
+        {successMessage && (
+          <div className="mb-5 border border-green-200 bg-green-50 p-4 text-sm text-green-800">
+            {successMessage}
+          </div>
+        )}
 
-          <button
-            type="button"
-            onClick={() => {
-              setActiveTab("feedback");
-              setError("");
-            }}
-            className={`px-5 py-3 text-sm font-semibold ${
-              activeTab === "feedback"
-                ? "border-b-2 border-black text-black"
-                : "text-gray-500"
-            }`}
-          >
-            Customer Feedback
-          </button>
-        </div>
+        {/* ALTERATION FORM */}
+        {activeForm === "alteration" && (
 
-        {/* Alteration Form */}
-        {activeTab === "alteration" && (
           <form
             onSubmit={handleAlterationSubmit}
             className="space-y-5 border border-gray-200 bg-white p-6"
           >
-            <h3 className="text-lg font-bold">
-              Submit Alteration Request
-            </h3>
 
+            <h2 className="text-lg font-bold text-black">
+              Submit Alteration Request
+            </h2>
+
+            {/* ORDER ID */}
             <div>
               <label className="mb-2 block text-sm font-semibold">
                 Order ID
               </label>
+
               <input
                 value={order.id || order.orderId}
                 readOnly
@@ -260,10 +258,12 @@ export default function AlterationFeedback({
               />
             </div>
 
+            {/* ISSUE TYPE */}
             <div>
               <label className="mb-2 block text-sm font-semibold">
                 Issue Type *
               </label>
+
               <select
                 name="issueType"
                 value={alteration.issueType}
@@ -279,10 +279,12 @@ export default function AlterationFeedback({
               </select>
             </div>
 
+            {/* DESCRIPTION */}
             <div>
               <label className="mb-2 block text-sm font-semibold">
-                Describe the issue *
+                Describe the Issue *
               </label>
+
               <textarea
                 name="description"
                 value={alteration.description}
@@ -294,10 +296,12 @@ export default function AlterationFeedback({
               />
             </div>
 
+            {/* PREFERRED DATE */}
             <div>
               <label className="mb-2 block text-sm font-semibold">
                 Preferred Visit / Pickup Date *
               </label>
+
               <input
                 type="date"
                 name="preferredDate"
@@ -309,37 +313,47 @@ export default function AlterationFeedback({
               />
             </div>
 
-            {alterationMessage && (
-              <p className="bg-green-50 p-3 text-sm text-green-700">
-                {alterationMessage}
+            {error && (
+              <p className="border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                {error}
               </p>
             )}
 
             <button
               type="submit"
-              className="bg-black px-6 py-3 text-sm font-semibold text-white hover:bg-gray-800"
+              disabled={alterationSubmitted}
+              className="bg-black px-6 py-3 text-sm font-semibold text-white hover:bg-gray-800 disabled:opacity-50"
             >
               Submit Request
             </button>
+
           </form>
         )}
 
-        {/* Feedback Form */}
-        {activeTab === "feedback" && (
+        {/* FEEDBACK FORM */}
+        {activeForm === "feedback" && (
+
           <form
             onSubmit={handleFeedbackSubmit}
             className="space-y-5 border border-gray-200 bg-white p-6"
           >
-            <h3 className="text-lg font-bold">
-              Share Your Feedback
-            </h3>
 
+            <h2 className="text-lg font-bold text-black">
+              Share Your Feedback
+            </h2>
+
+            <p className="text-sm text-gray-500">
+              Has your problem been solved? Please share your experience with us.
+            </p>
+
+            {/* RATING */}
             <div>
               <label className="mb-3 block text-sm font-semibold">
                 Rate Your Experience *
               </label>
 
               <div className="flex gap-2">
+
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
                     key={star}
@@ -360,6 +374,7 @@ export default function AlterationFeedback({
                     ★
                   </button>
                 ))}
+
               </div>
 
               <p className="mt-2 text-xs text-gray-500">
@@ -369,9 +384,40 @@ export default function AlterationFeedback({
               </p>
             </div>
 
+            {/* PROBLEM RESOLUTION */}
             <div>
               <label className="mb-2 block text-sm font-semibold">
-                Comments *
+                Has Your Problem Been Solved? *
+              </label>
+
+              <select
+                name="resolution"
+                value={feedback.resolution}
+                onChange={updateFeedback}
+                required
+                className="w-full border border-gray-300 px-4 py-3 text-sm"
+              >
+                <option value="">Select your response</option>
+
+                <option value="Yes, my problem has been solved.">
+                  Yes, my problem has been solved.
+                </option>
+
+                <option value="My problem has been partially solved.">
+                  My problem has been partially solved.
+                </option>
+
+                <option value="No, my problem has not been solved.">
+                  No, my problem has not been solved.
+                </option>
+
+              </select>
+            </div>
+
+            {/* COMMENTS */}
+            <div>
+              <label className="mb-2 block text-sm font-semibold">
+                Additional Comments *
               </label>
 
               <textarea
@@ -385,50 +431,21 @@ export default function AlterationFeedback({
               />
             </div>
 
-            {feedbackMessage && (
-              <p className="bg-green-50 p-3 text-sm text-green-700">
-                {feedbackMessage}
+            {error && (
+              <p className="border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                {error}
               </p>
             )}
 
             <button
               type="submit"
-              className="bg-black px-6 py-3 text-sm font-semibold text-white hover:bg-gray-800"
+              disabled={feedbackSubmitted}
+              className="bg-black px-6 py-3 text-sm font-semibold text-white hover:bg-gray-800 disabled:opacity-50"
             >
               Submit Feedback
             </button>
+
           </form>
-        )}
-
-        {error && (
-          <p className="mt-4 border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-            {error}
-          </p>
-        )}
-
-        {/* Alteration Status Information */}
-        {activeTab === "alteration" && (
-          <div className="mt-6 border border-gray-200 bg-white p-5">
-            <h3 className="mb-3 font-bold">
-              Alteration Request Status
-            </h3>
-
-            <div className="flex flex-wrap gap-3 text-sm">
-              <span className="bg-yellow-100 px-3 py-2 text-yellow-800">
-                Submitted
-              </span>
-              <span className="bg-gray-100 px-3 py-2 text-gray-500">
-                Reviewed
-              </span>
-              <span className="bg-gray-100 px-3 py-2 text-gray-500">
-                Resolved
-              </span>
-            </div>
-
-            <p className="mt-3 text-xs text-gray-500">
-              Your request will initially appear as Submitted. The studio can review it and update its progress.
-            </p>
-          </div>
         )}
 
       </section>
