@@ -131,12 +131,6 @@ export default function AdminDashboard({
     );
   };
 
-  const filteredOrders = activeFilter && activeFilter !== "alterations" && activeFilter !== "feedback"
-    ? orders
-        .filter((order) => order.status === activeFilter)
-        .filter(matchesSearch)
-    : [];
-
   const filteredAlterations = activeFilter === "alterations"
     ? alterations.filter(matchesAlterationSearch)
     : [];
@@ -149,13 +143,6 @@ export default function AdminDashboard({
     .filter(matchesSearch)
     .slice(-3)
     .reverse();
-
-  const handleCardClick = (status) => {
-    setActiveFilter((prev) => (prev === status ? null : status));
-    setSearchQuery("");
-    setSelectedAlteration(null);
-    setSelectedFeedback(null);
-  };
 
   const menuItems = [
     {
@@ -549,12 +536,7 @@ export default function AdminDashboard({
 
               <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
                 <div
-                  onClick={() => handleCardClick("Pending")}
-                  className={`cursor-pointer border p-5 transition-all hover:shadow-md ${
-                    activeFilter === "Pending"
-                      ? "border-yellow-500 bg-yellow-50 ring-2 ring-yellow-300"
-                      : "border-gray-300 hover:border-gray-400"
-                  }`}
+                  className="border border-gray-300 p-5 transition-all hover:border-gray-400 hover:shadow-md"
                 >
                   <p className="text-sm font-semibold">
                     Pending
@@ -568,12 +550,7 @@ export default function AdminDashboard({
                 </div>
 
                 <div
-                  onClick={() => handleCardClick("In Progress")}
-                  className={`cursor-pointer border p-5 transition-all hover:shadow-md ${
-                    activeFilter === "In Progress"
-                      ? "border-blue-500 bg-blue-50 ring-2 ring-blue-300"
-                      : "border-gray-300 hover:border-gray-400"
-                  }`}
+                  className="border border-gray-300 p-5 transition-all hover:border-gray-400 hover:shadow-md"
                 >
                   <p className="text-sm font-semibold">
                     In Progress
@@ -587,12 +564,7 @@ export default function AdminDashboard({
                 </div>
 
                 <div
-                  onClick={() => handleCardClick("Completed")}
-                  className={`cursor-pointer border p-5 transition-all hover:shadow-md ${
-                    activeFilter === "Completed"
-                      ? "border-green-500 bg-green-50 ring-2 ring-green-300"
-                      : "border-gray-300 hover:border-gray-400"
-                  }`}
+                  className="border border-gray-300 p-5 transition-all hover:border-gray-400 hover:shadow-md"
                 >
                   <p className="text-sm font-semibold">
                     Completed
@@ -606,146 +578,70 @@ export default function AdminDashboard({
                 </div>
               </div>
 
-              {/* Filtered Orders List — shown when a status card is clicked (Pending, In Progress, Completed) */}
-              {activeFilter && (
-                <div className="mb-8">
-                  <div className="mb-3 flex items-center justify-between">
-                    <h2 className="text-base font-bold">
-                      {activeFilter} Orders ({filteredOrders.length})
-                    </h2>
-                    <button
-                      onClick={() => setActiveFilter(null)}
-                      className="text-xs text-gray-500 underline hover:text-gray-800"
-                    >
-                      Close
-                    </button>
-                  </div>
+              {/* Recent Orders */}
+              <div className="mb-3 flex items-center justify-between">
+                <h2 className="text-base font-bold">
+                  Recent orders
+                </h2>
+                <span className="text-xs text-gray-500">
+                  {recentOrders.length} recent orders
+                </span>
+              </div>
 
-                  <div className="overflow-x-auto border border-gray-300">
-                    <table className="w-full min-w-[750px] text-left text-sm">
-                      <thead className="bg-gray-100">
-                        <tr>
-                          <th className="border-b px-4 py-3">Order ID</th>
-                          <th className="border-b px-4 py-3">Customer name</th>
-                          <th className="border-b px-4 py-3">Dress type</th>
-                          <th className="border-b px-4 py-3">Delivery date</th>
-                          <th className="border-b px-4 py-3">Status</th>
-                          <th className="border-b px-4 py-3">Action</th>
-                        </tr>
-                      </thead>
+              <div className="overflow-x-auto border border-gray-300">
+                <table className="w-full min-w-[750px] text-left text-sm">
+                  <thead className="bg-gray-100">
+                    <tr>
+                      <th className="border-b px-4 py-3">Order ID</th>
+                      <th className="border-b px-4 py-3">Customer name</th>
+                      <th className="border-b px-4 py-3">Dress type</th>
+                      <th className="border-b px-4 py-3">Delivery date</th>
+                      <th className="border-b px-4 py-3">Status</th>
+                      <th className="border-b px-4 py-3">Action</th>
+                    </tr>
+                  </thead>
 
-                      <tbody>
-                        {filteredOrders.map((order) => (
-                          <tr key={order.id} className="hover:bg-gray-50">
-                            <td className="border-b px-4 py-4">{order.id}</td>
-                            <td className="border-b px-4 py-4">{order.customer}</td>
-                            <td className="border-b px-4 py-4">{order.dress}</td>
-                            <td className="border-b px-4 py-4">{order.delivery}</td>
-                            <td className="border-b px-4 py-4">
-                              <span
-                                className={`rounded px-2 py-1 text-xs font-semibold ${
-                                  order.status === "Pending"
-                                    ? "bg-yellow-100 text-yellow-800"
-                                    : order.status === "In Progress"
-                                    ? "bg-blue-100 text-blue-800"
-                                    : "bg-green-100 text-green-800"
-                                }`}
-                              >
-                                {order.status}
-                              </span>
-                            </td>
-                            <td className="border-b px-4 py-4">
-                              <button
-                                onClick={onAllOrders}
-                                className="underline hover:text-blue-700"
-                              >
-                                Open
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
+                  <tbody>
+                    {recentOrders.map((order) => (
+                      <tr key={order.id} className="hover:bg-gray-50">
+                        <td className="border-b px-4 py-4">{order.id}</td>
+                        <td className="border-b px-4 py-4">{order.customer}</td>
+                        <td className="border-b px-4 py-4">{order.dress}</td>
+                        <td className="border-b px-4 py-4">{order.delivery}</td>
+                        <td className="border-b px-4 py-4">
+                          <span
+                            className={`rounded px-2 py-1 text-xs font-semibold ${
+                              order.status === "Pending"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : order.status === "In Progress"
+                                ? "bg-blue-100 text-blue-800"
+                                : "bg-green-100 text-green-800"
+                            }`}
+                          >
+                            {order.status}
+                          </span>
+                        </td>
+                        <td className="border-b px-4 py-4">
+                          <button
+                            onClick={onAllOrders}
+                            className="underline hover:text-blue-700"
+                          >
+                            Open
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
 
-                        {filteredOrders.length === 0 && (
-                          <tr>
-                            <td colSpan="6" className="px-4 py-8 text-center text-gray-500">
-                              No {activeFilter.toLowerCase()} orders found.
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              )}
-
-              {/* Recent Orders — hidden when a status filter is active */}
-              {!activeFilter && (
-                <>
-                  <div className="mb-3 flex items-center justify-between">
-                    <h2 className="text-base font-bold">
-                      Recent orders
-                    </h2>
-                    <span className="text-xs text-gray-500">
-                      {recentOrders.length} recent orders
-                    </span>
-                  </div>
-
-                  <div className="overflow-x-auto border border-gray-300">
-                    <table className="w-full min-w-[750px] text-left text-sm">
-                      <thead className="bg-gray-100">
-                        <tr>
-                          <th className="border-b px-4 py-3">Order ID</th>
-                          <th className="border-b px-4 py-3">Customer name</th>
-                          <th className="border-b px-4 py-3">Dress type</th>
-                          <th className="border-b px-4 py-3">Delivery date</th>
-                          <th className="border-b px-4 py-3">Status</th>
-                          <th className="border-b px-4 py-3">Action</th>
-                        </tr>
-                      </thead>
-
-                      <tbody>
-                        {recentOrders.map((order) => (
-                          <tr key={order.id} className="hover:bg-gray-50">
-                            <td className="border-b px-4 py-4">{order.id}</td>
-                            <td className="border-b px-4 py-4">{order.customer}</td>
-                            <td className="border-b px-4 py-4">{order.dress}</td>
-                            <td className="border-b px-4 py-4">{order.delivery}</td>
-                            <td className="border-b px-4 py-4">
-                              <span
-                                className={`rounded px-2 py-1 text-xs font-semibold ${
-                                  order.status === "Pending"
-                                    ? "bg-yellow-100 text-yellow-800"
-                                    : order.status === "In Progress"
-                                    ? "bg-blue-100 text-blue-800"
-                                    : "bg-green-100 text-green-800"
-                                }`}
-                              >
-                                {order.status}
-                              </span>
-                            </td>
-                            <td className="border-b px-4 py-4">
-                              <button
-                                onClick={onAllOrders}
-                                className="underline hover:text-blue-700"
-                              >
-                                Open
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-
-                        {recentOrders.length === 0 && (
-                          <tr>
-                            <td colSpan="6" className="px-4 py-8 text-center text-gray-500">
-                              No orders available.
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </>
-              )}
+                    {recentOrders.length === 0 && (
+                      <tr>
+                        <td colSpan="6" className="px-4 py-8 text-center text-gray-500">
+                          No orders available.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           )}
 
